@@ -3,6 +3,7 @@ import { ParallaxBackground } from './components/ParallaxBackground'
 import { LoadingScreen } from './components/LoadingScreen'
 import { Hero } from './components/Hero'
 import { Navigation } from './components/Navigation'
+import { BooksSection } from './components/BooksSection'
 import './App.css'
 
 function App() {
@@ -49,44 +50,13 @@ function App() {
           onExploreAuthorsClick={handleExploreAuthors}
         />
         
-        {/* Placeholder sections for navigation */}
-        <section 
-          className="books-section" 
-          style={{ 
-            minHeight: '100vh', 
-            padding: '4rem 2rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <div style={{ 
-            maxWidth: '800px', 
-            textAlign: 'center',
-            background: 'rgba(6, 20, 44, 0.8)',
-            padding: '3rem',
-            borderRadius: '1.6rem',
-            border: '1px solid var(--border-glow)'
-          }}>
-            <h2 style={{ 
-              color: 'var(--accent-cyan)', 
-              fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(3.2rem, 5vw, 4.8rem)',
-              marginBottom: '2rem'
-            }}>
-              Books Section
-            </h2>
-            <p style={{ 
-              color: 'var(--foreground)', 
-              fontSize: '1.8rem',
-              lineHeight: '1.6'
-            }}>
-              📚 Coming Soon: Browse our complete book collection with advanced search and filters.
-              This section will be implemented in Step 8.
-            </p>
-          </div>
-        </section>
+        {/* Books Section */}
+        <BooksSection 
+          onBookClick={(book) => console.log('Book clicked:', book)}
+          onAddBookClick={() => console.log('Add book clicked')}
+        />
         
+        {/* Placeholder Authors section */}
         <section 
           className="authors-section"
           style={{ 

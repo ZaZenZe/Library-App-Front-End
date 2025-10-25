@@ -1,0 +1,334 @@
+// ============================================
+// BOOKS SECTION STYLES
+// ============================================
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+@import '../../styles/animations';
+
+.books-section {
+  @include section-spacing;
+  position: relative;
+  min-height: 100vh;
+}
+
+.books-section__container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+  
+  @include mobile {
+    padding: 0 $spacing-md;
+  }
+}
+
+// ============================================
+// SECTION HEADER
+// ============================================
+
+.books-section__header {
+  @include flex-between;
+  margin-bottom: $spacing-3xl;
+  gap: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.books-section__title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.books-section__eyebrow {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $accent-cyan;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.books-section__title {
+  font-family: $font-heading;
+  font-size: clamp(3.6rem, 6vw, 5.6rem);
+  font-weight: $font-weight-black;
+  color: $foreground;
+  margin: 0;
+  @include text-gradient($accent-teal, $accent-cyan);
+}
+
+.books-section__add-btn {
+  @include button-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-xl;
+  font-size: $font-size-base;
+  white-space: nowrap;
+  
+  @include mobile {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.books-section__add-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.books-section__add-text {
+  @include mobile {
+    display: inline;
+  }
+}
+
+// ============================================
+// SEARCH BAR
+// ============================================
+
+.books-section__search {
+  margin-bottom: $spacing-2xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.books-section__search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+.books-section__search-icon {
+  position: absolute;
+  left: $spacing-md;
+  font-size: 2rem;
+  pointer-events: none;
+}
+
+.books-section__search-input {
+  @include input-base;
+  padding-left: calc($spacing-md + 3rem);
+  padding-right: calc($spacing-md + 3rem);
+  width: 100%;
+  font-size: $font-size-base;
+  
+  &:focus {
+    border-color: $accent-teal;
+    box-shadow: 0 0 20px rgba($accent-teal, 0.3);
+  }
+  
+  &::placeholder {
+    color: $muted-text;
+  }
+}
+
+.books-section__search-clear {
+  position: absolute;
+  right: $spacing-md;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($accent-teal, 0.1);
+  border: 1px solid rgba($accent-teal, 0.3);
+  border-radius: 50%;
+  color: $accent-teal;
+  font-size: 2.4rem;
+  cursor: pointer;
+  transition: all 0.3s $ease-smooth;
+  
+  &:hover {
+    background: rgba($accent-teal, 0.2);
+    transform: rotate(90deg);
+  }
+  
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.books-section__results-count {
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  color: $muted-text;
+  margin: 0;
+}
+
+// ============================================
+// BOOKS GRID
+// ============================================
+
+.books-section__grid {
+  @include responsive-grid(280px);
+  gap: $spacing-xl;
+  
+  @include mobile {
+    gap: $spacing-lg;
+  }
+}
+
+// ============================================
+// SKELETON LOADING CARDS
+// ============================================
+
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba($deep-blue, 0.3);
+  border: 1px solid rgba($border-glow, 0.3);
+  border-radius: $radius-lg;
+  overflow: hidden;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.skeleton-card__cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  @include skeleton;
+}
+
+.skeleton-card__content {
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.skeleton-card__title {
+  height: 24px;
+  width: 80%;
+  @include skeleton;
+  border-radius: $radius-sm;
+}
+
+.skeleton-card__author {
+  height: 16px;
+  width: 60%;
+  @include skeleton;
+  border-radius: $radius-sm;
+}
+
+.skeleton-card__isbn {
+  height: 28px;
+  width: 50%;
+  @include skeleton;
+  border-radius: $radius-sm;
+  margin-top: auto;
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+
+.books-section__empty {
+  @include flex-column-center;
+  gap: $spacing-lg;
+  padding: $spacing-3xl;
+  text-align: center;
+  min-height: 400px;
+}
+
+.books-section__empty-icon {
+  font-size: clamp(6rem, 10vw, 10rem);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.books-section__empty-title {
+  font-family: $font-heading;
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: $font-weight-bold;
+  color: $foreground;
+  margin: 0;
+}
+
+.books-section__empty-message {
+  font-family: $font-primary;
+  font-size: $font-size-lg;
+  color: $muted-text;
+  margin: 0;
+  max-width: 500px;
+}
+
+.books-section__clear-btn {
+  @include button-secondary;
+  padding: $spacing-md $spacing-xl;
+  margin-top: $spacing-md;
+}
+
+// ============================================
+// ERROR STATE
+// ============================================
+
+.books-section__error {
+  @include flex-column-center;
+  gap: $spacing-lg;
+  padding: $spacing-3xl;
+  text-align: center;
+  min-height: 400px;
+  background: rgba($error, 0.05);
+  border: 1px solid rgba($error, 0.2);
+  border-radius: $radius-lg;
+}
+
+.books-section__error-icon {
+  font-size: clamp(6rem, 10vw, 10rem);
+  animation: shake 0.5s ease-in-out;
+}
+
+.books-section__error-title {
+  font-family: $font-heading;
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: $font-weight-bold;
+  color: $error;
+  margin: 0;
+}
+
+.books-section__error-message {
+  font-family: $font-primary;
+  font-size: $font-size-lg;
+  color: $muted-text;
+  margin: 0;
+  max-width: 500px;
+}
+
+.books-section__retry-btn {
+  @include button-primary;
+  padding: $spacing-md $spacing-xl;
+  margin-top: $spacing-md;
+  background: linear-gradient(135deg, $error, darken($error, 10%));
+  
+  &:hover {
+    box-shadow: 0 0 30px rgba($error, 0.6);
+  }
+}
+
+// ============================================
+// SHAKE ANIMATION FOR ERROR
+// ============================================
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+// ============================================
+// REDUCED MOTION
+// ============================================
+
+@include reduced-motion {
+  .skeleton-card,
+  .books-section__empty-icon,
+  .books-section__error-icon {
+    animation: none !important;
+  }
+  
+  .books-section__search-clear:hover {
+    transform: none;
+  }
+}
