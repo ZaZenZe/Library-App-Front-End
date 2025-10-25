@@ -1,14 +1,18 @@
 import { useState } from 'react'
+import type { Book } from './types/api'
 import { ParallaxBackground } from './components/ParallaxBackground'
 import { LoadingScreen } from './components/LoadingScreen'
 import { Hero } from './components/Hero'
 import { Navigation } from './components/Navigation'
 import { BooksSection } from './components/BooksSection'
+import { BookDetailModal } from './components/BookDetailModal'
 import './App.css'
 
 function App() {
   const [activeLayer, setActiveLayer] = useState<1 | 2 | 3>(1)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedBookId, setSelectedBookId] = useState<number | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleBrowseBooks = () => {
     setActiveLayer(2)
@@ -36,6 +40,28 @@ function App() {
     }
   }
 
+  const handleBookClick = (book: Book) => {
+    setSelectedBookId(book.id)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedBookId(null)
+  }
+
+  const handleBookDeleted = () => {
+    // Refresh books list - BooksSection will refetch automatically
+    setIsModalOpen(false)
+    setSelectedBookId(null)
+  }
+
+  const handleEditBook = (book: Book) => {
+    // TODO: Open edit form modal (Step 10)
+    console.log('Edit book:', book)
+    setIsModalOpen(false)
+  }
+
   return (
     <>
       {isLoading && <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />}
@@ -52,8 +78,17 @@ function App() {
         
         {/* Books Section */}
         <BooksSection 
-          onBookClick={(book) => console.log('Book clicked:', book)}
+          onBookClick={handleBookClick}
           onAddBookClick={() => console.log('Add book clicked')}
+        />
+        
+        {/* Book Detail Modal */}
+        <BookDetailModal
+          bookId={selectedBookId}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onEdit={handleEditBook}
+          onDeleted={handleBookDeleted}
         />
         
         {/* Placeholder Authors section */}

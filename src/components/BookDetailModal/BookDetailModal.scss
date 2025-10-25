@@ -1,0 +1,407 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+@use '../../styles/animations' as *;
+
+.book-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 1rem;
+  }
+
+  // Backdrop with blur effect
+  &__backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($primary-dark, 0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  // Modal container
+  &__container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: linear-gradient(
+      135deg,
+      rgba($deep-blue, 0.98) 0%,
+      rgba($primary-dark, 0.98) 100%
+    );
+    border: 1px solid $border-glow;
+    border-radius: 2.4rem;
+    box-shadow: 
+      0 0 60px rgba($accent-teal, 0.2),
+      0 20px 60px rgba(0, 0, 0, 0.5);
+    padding: 4rem;
+
+    @include custom-scrollbar;
+
+    @media (max-width: $breakpoint-tablet) {
+      padding: 3rem 2rem;
+      border-radius: 2rem;
+      max-height: 85vh;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+      padding: 2rem 1.6rem;
+      border-radius: 1.6rem;
+    }
+  }
+
+  // Close button
+  &__close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 4.8rem;
+    height: 4.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($foreground, 0.05);
+    border: 1px solid rgba($accent-teal, 0.3);
+    border-radius: 50%;
+    color: $foreground;
+    font-size: 2.4rem;
+    cursor: pointer;
+    transition: all $transition-normal;
+    z-index: 10;
+
+    &:hover {
+      background: rgba($accent-teal, 0.2);
+      border-color: $accent-teal;
+      transform: rotate(90deg) scale(1.1);
+      box-shadow: 0 0 20px rgba($accent-teal, 0.4);
+    }
+
+    &:focus {
+      @include focus-ring($accent-teal);
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+      width: 4rem;
+      height: 4rem;
+      font-size: 2rem;
+      top: 1.6rem;
+      right: 1.6rem;
+    }
+  }
+
+  // Loading state
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40rem;
+    gap: 2rem;
+
+    p {
+      @include text-gradient;
+      font-size: 1.8rem;
+      font-family: $font-heading;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      animation: pulse 2s ease-in-out infinite;
+    }
+  }
+
+  &__spinner {
+    width: 6rem;
+    height: 6rem;
+    border: 4px solid rgba($accent-teal, 0.2);
+    border-top-color: $accent-teal;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  // Error state
+  &__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40rem;
+    text-align: center;
+    gap: 2rem;
+    padding: 4rem 2rem;
+
+    h3 {
+      font-size: 2.8rem;
+      font-family: $font-heading;
+      color: $foreground;
+      margin: 0;
+    }
+
+    p {
+      font-size: 1.6rem;
+      color: $muted-text;
+      max-width: 50rem;
+      line-height: 1.6;
+    }
+  }
+
+  &__error-icon {
+    font-size: 8rem;
+    line-height: 1;
+    animation: shake 0.5s ease-in-out;
+  }
+
+  &__retry-btn {
+    @include button-primary;
+    margin-top: 1rem;
+    padding: 1.2rem 3rem;
+    font-size: 1.6rem;
+  }
+
+  // Content layout
+  &__content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 4rem;
+    padding-right: 4rem; // Space for close button
+
+    @media (max-width: $breakpoint-tablet) {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      padding-right: 0;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+      gap: 2rem;
+    }
+  }
+
+  // Cover section
+  &__cover-section {
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: $breakpoint-tablet) {
+      justify-content: center;
+    }
+  }
+
+  &__cover {
+    width: 300px;
+    aspect-ratio: 3 / 4;
+    border-radius: 1.6rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba($accent-teal, 0.2);
+    border: 2px solid rgba($accent-teal, 0.3);
+
+    @media (max-width: $breakpoint-tablet) {
+      width: 250px;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+      width: 200px;
+    }
+  }
+
+  &__cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__cover-letter {
+    font-size: 16rem;
+    font-weight: 900;
+    font-family: $font-heading;
+    color: rgba($foreground, 0.9);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+
+    @media (max-width: $breakpoint-tablet) {
+      font-size: 12rem;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+      font-size: 10rem;
+    }
+  }
+
+  // Details section
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    @media (max-width: $breakpoint-mobile) {
+      gap: 2rem;
+    }
+  }
+
+  &__title {
+    font-size: clamp(3rem, 4vw, 4.8rem);
+    font-family: $font-heading;
+    font-weight: 900;
+    color: $foreground;
+    line-height: 1.2;
+    margin: 0 0 1rem 0;
+    @include text-gradient;
+  }
+
+  &__author {
+    font-size: 2rem;
+    color: $muted-text;
+    margin: 0;
+
+    span {
+      color: $accent-cyan;
+      font-weight: 600;
+      font-family: $font-heading;
+    }
+  }
+
+  // Metadata grid
+  &__meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+    border-top: 1px solid rgba($accent-teal, 0.2);
+    border-bottom: 1px solid rgba($accent-teal, 0.2);
+
+    @media (max-width: $breakpoint-mobile) {
+      grid-template-columns: 1fr;
+      gap: 1.6rem;
+    }
+  }
+
+  &__meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  &__meta-label {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: $muted-text;
+    font-weight: 600;
+    font-family: $font-mono;
+  }
+
+  &__meta-value {
+    font-size: 1.8rem;
+    color: $foreground;
+    font-weight: 600;
+    font-family: $font-mono;
+    
+    &:first-letter {
+      color: $accent-teal;
+    }
+  }
+
+  // Action buttons
+  &__actions {
+    display: flex;
+    gap: 1.6rem;
+    margin-top: auto;
+
+    @media (max-width: $breakpoint-mobile) {
+      flex-direction: column;
+    }
+  }
+
+  &__action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.6rem 2.4rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    font-family: $font-primary;
+    border-radius: 1.2rem;
+    cursor: pointer;
+    transition: all $transition-normal;
+    border: 2px solid;
+    background: rgba($foreground, 0.05);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    &:focus {
+      @include focus-ring;
+    }
+
+    // Edit button
+    &--edit {
+      color: $accent-cyan;
+      border-color: rgba($accent-cyan, 0.3);
+
+      &:hover {
+        background: rgba($accent-cyan, 0.15);
+        border-color: $accent-cyan;
+        box-shadow: 0 0 30px rgba($accent-cyan, 0.3);
+        transform: translateY(-2px);
+      }
+    }
+
+    // Delete button
+    &--delete {
+      color: $error;
+      border-color: rgba($error, 0.3);
+
+      &:hover {
+        background: rgba($error, 0.15);
+        border-color: $error;
+        box-shadow: 0 0 30px rgba($error, 0.3);
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  &__action-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+}
+
+// Animations
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
