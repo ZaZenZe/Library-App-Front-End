@@ -1,12 +1,16 @@
 import { useState } from 'react'
 import { ParallaxBackground } from './components/ParallaxBackground'
+import { LoadingScreen } from './components/LoadingScreen'
 import './App.css'
 
 function App() {
   const [activeLayer, setActiveLayer] = useState<1 | 2 | 3>(1)
+  const [isLoading, setIsLoading] = useState(true)
 
   return (
     <>
+      {isLoading && <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />}
+      
       <ParallaxBackground activeLayer={activeLayer} />
       
       <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', padding: '2rem' }}>

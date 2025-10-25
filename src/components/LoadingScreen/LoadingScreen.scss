@@ -1,0 +1,291 @@
+// ============================================
+// LOADING SCREEN STYLES
+// ============================================
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+@import '../../styles/animations';
+
+.loading-screen {
+  @include fixed-cover;
+  @include flex-center;
+  background: linear-gradient(135deg, $primary-dark 0%, $deep-blue 100%);
+  z-index: $z-loading;
+  overflow: hidden;
+  transition: opacity 0.8s $ease-smooth;
+  
+  &--complete {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// ============================================
+// BACKGROUND ORBS
+// ============================================
+
+.loading-screen__bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  @include hardware-accelerate;
+  
+  &--1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, $accent-teal, transparent);
+    top: -100px;
+    left: -100px;
+    animation: pulse 4s ease-in-out infinite;
+  }
+  
+  &--2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, $accent-cyan, transparent);
+    bottom: -150px;
+    right: -150px;
+    animation: pulse 5s ease-in-out infinite 1s;
+  }
+  
+  &--3 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, $accent-purple, transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 6s ease-in-out infinite 2s;
+  }
+  
+  @include mobile {
+    &--1, &--2, &--3 {
+      width: 250px;
+      height: 250px;
+    }
+  }
+}
+
+// ============================================
+// MAIN CONTENT
+// ============================================
+
+.loading-screen__content {
+  @include flex-column-center;
+  gap: $spacing-3xl;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 0.6s $ease-smooth;
+}
+
+// ============================================
+// CIRCULAR VISUALIZER
+// ============================================
+
+.loading-screen__visualizer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  @include hardware-accelerate;
+  
+  @include mobile {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+.loading-screen__ring {
+  @include absolute-cover;
+  transform-origin: center;
+  
+  &--outer {
+    animation: spin 3s linear infinite;
+  }
+  
+  &--middle {
+    animation: spin 4s linear infinite reverse;
+  }
+  
+  &--inner {
+    animation: spin 5s linear infinite;
+  }
+  
+  circle {
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 0.3s $ease-smooth;
+    filter: drop-shadow(0 0 10px currentColor);
+  }
+}
+
+// Center Percentage Display
+.loading-screen__percentage {
+  @include absolute-center;
+  font-size: clamp(3.2rem, 5vw, 4.8rem);
+  font-weight: $font-weight-black;
+  font-family: $font-heading;
+  @include text-gradient($accent-teal, $accent-purple);
+  text-shadow: 0 0 30px rgba($accent-teal, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+// ============================================
+// LOADING TEXT
+// ============================================
+
+.loading-screen__text {
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: $font-weight-bold;
+  color: $foreground;
+  text-align: center;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba($accent-teal, 0.6);
+  animation: neonGlow 2s ease-in-out infinite;
+  transition: font-family 0.3s $ease-smooth;
+  
+  @include mobile {
+    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    letter-spacing: 0.2em;
+  }
+}
+
+// ============================================
+// PROGRESS BAR
+// ============================================
+
+.loading-screen__progress-bar {
+  width: clamp(280px, 50vw, 400px);
+  height: 6px;
+  background: rgba($deep-blue, 0.6);
+  border-radius: $radius-full;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid $border-glow;
+  box-shadow: 
+    0 0 10px rgba($accent-teal, 0.2),
+    inset 0 0 10px rgba($primary-dark, 0.5);
+  
+  @include mobile {
+    width: clamp(240px, 80vw, 320px);
+    height: 4px;
+  }
+}
+
+.loading-screen__progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    $accent-teal 0%,
+    $accent-cyan 50%,
+    $accent-blue 100%
+  );
+  border-radius: $radius-full;
+  transition: width 0.3s $ease-smooth;
+  position: relative;
+  box-shadow: 0 0 20px rgba($accent-teal, 0.8);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(white, 0.3),
+      transparent
+    );
+    animation: shimmer 2s linear infinite;
+  }
+}
+
+// ============================================
+// DECORATIVE DOTS
+// ============================================
+
+.loading-screen__dots {
+  display: flex;
+  gap: $spacing-md;
+  justify-content: center;
+  margin-top: $spacing-lg;
+}
+
+.loading-screen__dot {
+  width: 12px;
+  height: 12px;
+  background: $accent-teal;
+  border-radius: 50%;
+  box-shadow: 0 0 10px $accent-teal;
+  animation: dotPulse 1.5s ease-in-out infinite;
+  
+  &:nth-child(2) {
+    animation-delay: 0.3s;
+    background: $accent-cyan;
+    box-shadow: 0 0 10px $accent-cyan;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.6s;
+    background: $accent-blue;
+    box-shadow: 0 0 10px $accent-blue;
+  }
+  
+  @include mobile {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+// ============================================
+// DOT PULSE ANIMATION
+// ============================================
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.6;
+  }
+}
+
+// ============================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================
+
+@include mobile {
+  .loading-screen__content {
+    gap: $spacing-2xl;
+    padding: $spacing-lg;
+  }
+}
+
+// ============================================
+// REDUCED MOTION
+// ============================================
+
+@include reduced-motion {
+  .loading-screen__ring {
+    animation: none !important;
+  }
+  
+  .loading-screen__percentage,
+  .loading-screen__text,
+  .loading-screen__dot {
+    animation: none !important;
+  }
+  
+  .loading-screen__progress-fill::after {
+    display: none;
+  }
+  
+  .loading-screen__bg-orb {
+    animation: none !important;
+  }
+}
