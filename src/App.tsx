@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ParallaxBackground } from './components/ParallaxBackground'
 import { LoadingScreen } from './components/LoadingScreen'
 import { Hero } from './components/Hero'
+import { Navigation } from './components/Navigation'
 import './App.css'
 
 function App() {
@@ -24,9 +25,21 @@ function App() {
     }
   }
 
+  const handleNavigate = (section: 'hero' | 'books' | 'authors' | 'about') => {
+    if (section === 'books') {
+      setActiveLayer(2)
+    } else if (section === 'authors') {
+      setActiveLayer(3)
+    } else if (section === 'hero') {
+      setActiveLayer(1)
+    }
+  }
+
   return (
     <>
       {isLoading && <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />}
+      
+      <Navigation onNavigate={handleNavigate} />
       
       <ParallaxBackground activeLayer={activeLayer} />
       

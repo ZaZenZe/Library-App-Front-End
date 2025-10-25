@@ -1,0 +1,299 @@
+// ============================================
+// NAVIGATION STYLES
+// ============================================
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+@import '../../styles/animations';
+
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-nav;
+  padding: $spacing-md $spacing-lg;
+  background: rgba($primary-dark, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid $border-glow;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: background 0.3s $ease-smooth;
+  
+  &--visible {
+    pointer-events: all;
+  }
+  
+  &:hover {
+    background: rgba($primary-dark, 0.95);
+  }
+  
+  @include mobile {
+    padding: $spacing-sm $spacing-md;
+  }
+}
+
+// ============================================
+// CONTAINER
+// ============================================
+
+.navigation__container {
+  @include flex-between;
+  max-width: 1600px;
+  margin: 0 auto;
+  gap: $spacing-lg;
+}
+
+// ============================================
+// LOGO
+// ============================================
+
+.navigation__logo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  transition: all 0.3s $ease-smooth;
+  
+  &:hover {
+    background: rgba($accent-teal, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.navigation__logo-icon {
+  font-size: 2.4rem;
+  animation: pulse 3s ease-in-out infinite;
+  
+  @include mobile {
+    font-size: 2rem;
+  }
+}
+
+.navigation__logo-text {
+  font-family: $font-heading;
+  font-weight: $font-weight-black;
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+  letter-spacing: 0.1em;
+  color: $foreground;
+  text-shadow: 0 0 20px rgba($accent-teal, 0.5);
+  animation: neonGlow 3s ease-in-out infinite;
+  
+  @include mobile {
+    display: none;
+  }
+}
+
+// ============================================
+// NAVIGATION LINKS
+// ============================================
+
+.navigation__links {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xl;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  
+  @include mobile {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: rgba($primary-dark, 0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid $border-glow;
+    padding: $spacing-lg 0;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s $ease-smooth;
+    
+    &--open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+}
+
+.navigation__link {
+  position: relative;
+  font-family: $font-primary;
+  font-size: 1.6rem;
+  font-weight: $font-weight-medium;
+  color: $muted-text;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.3s $ease-smooth;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $accent-teal, $accent-cyan);
+    transform: translateX(-50%);
+    transition: width 0.3s $ease-smooth;
+  }
+  
+  &:hover {
+    color: $foreground;
+    
+    &::after {
+      width: 80%;
+    }
+  }
+  
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 4px;
+  }
+  
+  &--active {
+    color: $accent-teal;
+    
+    &::after {
+      width: 100%;
+      box-shadow: 0 0 10px $accent-teal;
+    }
+  }
+  
+  @include mobile {
+    width: 100%;
+    padding: $spacing-md $spacing-lg;
+    font-size: 1.8rem;
+    text-align: left;
+    border-radius: 0;
+    
+    &::after {
+      left: 0;
+      transform: none;
+      height: 1px;
+    }
+    
+    &:hover::after {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================
+// MOBILE MENU TOGGLE
+// ============================================
+
+.navigation__mobile-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-xs;
+  border-radius: $radius-sm;
+  transition: all 0.3s $ease-smooth;
+  
+  &:hover {
+    background: rgba($accent-teal, 0.1);
+  }
+  
+  &:focus-visible {
+    @include focus-ring;
+  }
+  
+  @include mobile {
+    display: flex;
+  }
+}
+
+.navigation__hamburger {
+  width: 24px;
+  height: 2px;
+  background: $accent-teal;
+  border-radius: 2px;
+  transition: all 0.3s $ease-smooth;
+  box-shadow: 0 0 8px rgba($accent-teal, 0.5);
+  
+  .navigation__links--open ~ .navigation__mobile-toggle & {
+    &:nth-child(1) {
+      transform: rotate(45deg) translateY(8px);
+    }
+    
+    &:nth-child(2) {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    
+    &:nth-child(3) {
+      transform: rotate(-45deg) translateY(-8px);
+    }
+  }
+}
+
+// ============================================
+// SCROLL SHADOW EFFECT
+// ============================================
+
+.navigation::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: linear-gradient(
+    to bottom,
+    rgba($primary-dark, 0.5),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s $ease-smooth;
+  pointer-events: none;
+}
+
+.navigation--visible::before {
+  opacity: 1;
+}
+
+// ============================================
+// REDUCED MOTION
+// ============================================
+
+@include reduced-motion {
+  .navigation {
+    transition: none;
+    
+    &__logo-icon,
+    &__logo-text {
+      animation: none !important;
+    }
+  }
+  
+  .navigation__link::after {
+    transition: none;
+  }
+  
+  @include mobile {
+    .navigation__links {
+      transition: none;
+    }
+  }
+}
