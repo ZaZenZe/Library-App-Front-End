@@ -1,0 +1,197 @@
+// ============================================
+// DESIGN TOKENS - Color Palette
+// ============================================
+
+// Primary Colors
+$primary-dark: #03060f;
+$deep-blue: #06142c;
+$foreground: #e6f7ff;
+$muted-text: rgba(230, 247, 255, 0.64);
+
+// Accent Colors (Neon)
+$accent-teal: #2effd3;
+$accent-cyan: #00d4d4;
+$accent-blue: #23c6ff;
+$accent-purple: #c656ff;
+$accent-pink: #ff69b4;
+
+// UI States
+$border-glow: rgba(46, 255, 211, 0.2);
+$success: #00ff88;
+$error: #ff4466;
+$warning: #ffaa00;
+$info: #23c6ff;
+
+// Background Gradients
+$bg-gradient-primary: linear-gradient(135deg, #0a1628 0%, #041329 100%);
+$bg-gradient-radial: radial-gradient(circle at 30% 40%, rgba(35, 198, 255, 0.08), transparent 50%);
+
+// ============================================
+// TYPOGRAPHY
+// ============================================
+
+// Font Families
+$font-primary: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-heading: 'Space Grotesk', 'Orbitron', sans-serif;
+$font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+// Cycling Fonts for Animations
+$font-cycle-1: 'Bangers', cursive;
+$font-cycle-2: 'Monoton', cursive;
+$font-cycle-3: 'Rubik Glitch', cursive;
+$font-cycle-4: 'Concert One', cursive;
+$font-cycle-5: 'Orbitron', sans-serif;
+$font-cycle-6: 'Press Start 2P', cursive;
+$font-cycle-7: 'Oswald', sans-serif;
+
+// Font Sizes (using clamp for responsive scaling)
+$font-size-xs: clamp(1.2rem, 1.5vw, 1.4rem);
+$font-size-sm: clamp(1.4rem, 2vw, 1.6rem);
+$font-size-base: clamp(1.6rem, 2.5vw, 1.8rem);
+$font-size-md: clamp(1.8rem, 3vw, 2.2rem);
+$font-size-lg: clamp(2.4rem, 4vw, 3.2rem);
+$font-size-xl: clamp(3.2rem, 6vw, 4.8rem);
+$font-size-2xl: clamp(4.8rem, 8vw, 6.4rem);
+$font-size-3xl: clamp(6.4rem, 10vw, 9.6rem);
+
+// Font Weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-black: 900;
+
+// Line Heights
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// ============================================
+// SPACING & LAYOUT
+// ============================================
+
+// Base Unit (8px)
+$spacing-unit: 0.8rem;
+
+// Spacing Scale
+$spacing-xs: calc($spacing-unit * 0.5); // 4px
+$spacing-sm: $spacing-unit; // 8px
+$spacing-md: calc($spacing-unit * 2); // 16px
+$spacing-lg: calc($spacing-unit * 3); // 24px
+$spacing-xl: calc($spacing-unit * 4); // 32px
+$spacing-2xl: calc($spacing-unit * 6); // 48px
+$spacing-3xl: calc($spacing-unit * 8); // 64px
+$spacing-4xl: calc($spacing-unit * 12); // 96px
+
+// Section Padding
+$section-padding-mobile: clamp(4rem, 8vw, 6rem);
+$section-padding-desktop: clamp(6rem, 10vw, 12rem);
+
+// Container Widths
+$container-sm: 768px;
+$container-md: 1024px;
+$container-lg: 1400px;
+$container-xl: 1600px;
+
+// Border Radius
+$radius-sm: 0.8rem;
+$radius-md: 1.6rem;
+$radius-lg: 2.4rem;
+$radius-xl: 3.2rem;
+$radius-full: 9999px;
+
+// Card Padding
+$card-padding-sm: 1.6rem;
+$card-padding-md: 2.4rem;
+$card-padding-lg: 3.2rem;
+
+// ============================================
+// BREAKPOINTS
+// ============================================
+
+$breakpoint-mobile: 320px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+$breakpoint-desktop-lg: 1440px;
+$breakpoint-desktop-xl: 1920px;
+
+// ============================================
+// Z-INDEX LAYERS
+// ============================================
+
+$z-background: -1;
+$z-base: 0;
+$z-parallax-1: 1;
+$z-parallax-2: 2;
+$z-parallax-3: 3;
+$z-content: 10;
+$z-nav: 100;
+$z-modal-backdrop: 500;
+$z-modal: 600;
+$z-toast: 700;
+$z-loading: 1000;
+
+// ============================================
+// ANIMATION TIMINGS
+// ============================================
+
+$timing-instant: 0.1s;
+$timing-fast: 0.2s;
+$timing-normal: 0.3s;
+$timing-medium: 0.5s;
+$timing-slow: 0.8s;
+$timing-very-slow: 1.2s;
+
+// Easing Functions
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+$ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+$ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+// Animation Durations
+$animation-float: 20s;
+$animation-color-shift: 3s;
+$animation-font-cycle: 0.5s;
+$animation-neon-pulse: 2s;
+$animation-shimmer: 1.5s;
+
+// ============================================
+// SHADOWS & EFFECTS
+// ============================================
+
+// Box Shadows
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+$shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.4);
+
+// Neon Glows
+$glow-teal: 0 0 20px rgba(46, 255, 211, 0.4);
+$glow-teal-strong: 0 0 40px rgba(46, 255, 211, 0.8);
+$glow-cyan: 0 0 20px rgba(0, 212, 212, 0.4);
+$glow-blue: 0 0 20px rgba(35, 198, 255, 0.4);
+$glow-purple: 0 0 20px rgba(198, 86, 255, 0.4);
+
+// Text Shadows
+$text-shadow-glow: 0 0 20px rgba(46, 255, 211, 0.6);
+$text-shadow-strong: 0 0 30px rgba(46, 255, 211, 0.9);
+
+// Blur Effects
+$blur-sm: blur(4px);
+$blur-md: blur(8px);
+$blur-lg: blur(16px);
+$blur-xl: blur(24px);
+
+// ============================================
+// GRID & LAYOUT
+// ============================================
+
+$grid-gap: $spacing-lg;
+$grid-columns-mobile: 1;
+$grid-columns-tablet: 2;
+$grid-columns-desktop: 3;
+$grid-columns-desktop-lg: 4;
+
+$card-min-width: 280px;

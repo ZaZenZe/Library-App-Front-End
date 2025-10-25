@@ -1,0 +1,403 @@
+// ============================================
+// GLOBAL RESET & BASE STYLES
+// ============================================
+
+@import './variables';
+@import './mixins';
+@import './animations';
+
+// ============================================
+// CSS RESET
+// ============================================
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// ============================================
+// ROOT VARIABLES (CSS Custom Properties)
+// ============================================
+
+:root {
+  // Colors
+  --primary-dark: #{$primary-dark};
+  --deep-blue: #{$deep-blue};
+  --foreground: #{$foreground};
+  --muted-text: #{$muted-text};
+  --accent-teal: #{$accent-teal};
+  --accent-cyan: #{$accent-cyan};
+  --accent-blue: #{$accent-blue};
+  --accent-purple: #{$accent-purple};
+  --accent-pink: #{$accent-pink};
+  --border-glow: #{$border-glow};
+  --success: #{$success};
+  --error: #{$error};
+  --warning: #{$warning};
+  --info: #{$info};
+
+  // Spacing
+  --spacing-xs: #{$spacing-xs};
+  --spacing-sm: #{$spacing-sm};
+  --spacing-md: #{$spacing-md};
+  --spacing-lg: #{$spacing-lg};
+  --spacing-xl: #{$spacing-xl};
+  --spacing-2xl: #{$spacing-2xl};
+  --spacing-3xl: #{$spacing-3xl};
+  --spacing-4xl: #{$spacing-4xl};
+
+  // Typography
+  --font-primary: #{$font-primary};
+  --font-heading: #{$font-heading};
+  --font-mono: #{$font-mono};
+
+  // Radius
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+  --radius-full: #{$radius-full};
+
+  // Z-Index
+  --z-background: #{$z-background};
+  --z-base: #{$z-base};
+  --z-content: #{$z-content};
+  --z-nav: #{$z-nav};
+  --z-modal-backdrop: #{$z-modal-backdrop};
+  --z-modal: #{$z-modal};
+  --z-toast: #{$z-toast};
+  --z-loading: #{$z-loading};
+}
+
+// ============================================
+// HTML & BODY
+// ============================================
+
+html {
+  font-size: 62.5%; // 1rem = 10px for easier calculations
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+
+  @include reduced-motion {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  font-family: $font-primary;
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+  color: $foreground;
+  background: $primary-dark;
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  position: relative;
+
+  // Base background gradient
+  background: linear-gradient(135deg, #0a1628 0%, #041329 100%);
+  background-attachment: fixed;
+}
+
+#root {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+}
+
+// ============================================
+// TYPOGRAPHY
+// ============================================
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-heading;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: $foreground;
+  margin: 0;
+}
+
+h1 {
+  font-size: $font-size-3xl;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: $font-size-2xl;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: $font-size-xl;
+}
+
+h4 {
+  font-size: $font-size-lg;
+}
+
+h5 {
+  font-size: $font-size-md;
+}
+
+h6 {
+  font-size: $font-size-base;
+}
+
+p {
+  margin: 0;
+  color: $foreground;
+}
+
+a {
+  color: $accent-teal;
+  text-decoration: none;
+  transition: color $timing-fast $ease-in-out;
+
+  &:hover {
+    color: $accent-cyan;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent-teal;
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+}
+
+strong, b {
+  font-weight: $font-weight-bold;
+}
+
+em, i {
+  font-style: italic;
+}
+
+code {
+  font-family: $font-mono;
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  background: rgba($deep-blue, 0.6);
+  border: 1px solid $border-glow;
+  border-radius: 4px;
+  color: $accent-teal;
+}
+
+pre {
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  padding: $spacing-lg;
+  background: rgba($deep-blue, 0.6);
+  border: 1px solid $border-glow;
+  border-radius: $radius-md;
+  overflow-x: auto;
+  @include custom-scrollbar;
+
+  code {
+    padding: 0;
+    background: none;
+    border: none;
+  }
+}
+
+// ============================================
+// LISTS
+// ============================================
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// ============================================
+// IMAGES & MEDIA
+// ============================================
+
+img, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+svg {
+  fill: currentColor;
+}
+
+// ============================================
+// BUTTONS
+// ============================================
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+// ============================================
+// FORMS
+// ============================================
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+// ============================================
+// SELECTION
+// ============================================
+
+::selection {
+  background: rgba($accent-teal, 0.3);
+  color: $foreground;
+}
+
+::-moz-selection {
+  background: rgba($accent-teal, 0.3);
+  color: $foreground;
+}
+
+// ============================================
+// SCROLLBAR
+// ============================================
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba($deep-blue, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, $accent-teal, $accent-cyan);
+  border-radius: $radius-full;
+
+  &:hover {
+    background: linear-gradient(180deg, lighten($accent-teal, 10%), lighten($accent-cyan, 10%));
+  }
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+.container {
+  @include container;
+}
+
+.section {
+  @include section-spacing;
+  position: relative;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-between {
+  @include flex-between;
+}
+
+.flex-column {
+  @include flex-column;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-gradient {
+  @include text-gradient;
+}
+
+.neon-text {
+  @include neon-text;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// ============================================
+// FOCUS VISIBLE
+// ============================================
+
+:focus-visible {
+  outline: 2px solid $accent-teal;
+  outline-offset: 4px;
+}
+
+// ============================================
+// REDUCED MOTION
+// ============================================
+
+@include reduced-motion {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// ============================================
+// PRINT STYLES
+// ============================================
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+  
+  button,
+  .no-print {
+    display: none;
+  }
+}
