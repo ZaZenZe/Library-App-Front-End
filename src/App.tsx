@@ -53,8 +53,8 @@ function App() {
   }, [isLoading]);
 
   // Fetch books and authors ONCE at app level - prevent duplicate API calls
-  const { data: books, loading: booksLoading, error: booksError } = useBooks()
-  const { data: authors, loading: authorsLoading, error: authorsError } = useAuthors()
+  const { data: books, loading: booksLoading, error: booksError, refetch: refetchBooks } = useBooks()
+  const { data: authors, loading: authorsLoading, error: authorsError, refetch: refetchAuthors } = useAuthors()
 
   const handleNavigate = (section: 'hero' | 'books' | 'authors' | 'about') => {
     // Scroll to appropriate section (no need to manage activeLayer - ParallaxBackground handles it automatically)
@@ -75,7 +75,8 @@ function App() {
   }
 
   const handleBookDeleted = () => {
-    // Refresh books list - BooksSection will refetch automatically
+    // Refresh books list
+    refetchBooks();
     setIsModalOpen(false)
     setSelectedBookId(null)
     success('Book deleted successfully! 🗑️')
@@ -94,7 +95,8 @@ function App() {
   }
 
   const handleFormSuccess = () => {
-    // Refresh books list - BooksSection will refetch automatically
+    // Refresh books list
+    refetchBooks();
     setIsFormModalOpen(false);
     setEditingBook(null);
     success(editingBook ? 'Book updated successfully! ✨' : 'Book added to your library! 📚')
@@ -122,9 +124,10 @@ function App() {
   }
 
   const handleAuthorFormSuccess = () => {
+    // Refresh authors list
+    refetchAuthors();
     setIsAuthorFormModalOpen(false);
     setEditingAuthor(null);
-    // Authors list will refetch automatically
     success(editingAuthor ? 'Author profile updated successfully! ✨' : 'Author profile created successfully! 👤')
   }
 
@@ -134,9 +137,10 @@ function App() {
   }
 
   const handleAuthorDeleted = () => {
+    // Refresh authors list
+    refetchAuthors();
     setIsAuthorModalOpen(false);
     setSelectedAuthorId(null);
-    // Authors list will refetch automatically
     success('Author deleted successfully! 🗑️')
   }
 
@@ -189,6 +193,7 @@ function App() {
           onSuccess={handleFormSuccess}
           editBook={editingBook}
           onError={error}
+          onAuthorsRefresh={refetchAuthors}
         />
         
         {/* Authors Section */}

@@ -10,6 +10,7 @@ interface BookFormModalProps {
   onSuccess?: (book: Book) => void;
   onError?: (message: string) => void;
   editBook?: Book | null; // If provided, we're editing; otherwise, creating
+  onAuthorsRefresh?: () => void; // Callback to refresh authors list
 }
 
 interface FormData {
@@ -38,6 +39,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   onSuccess,
   onError,
   editBook,
+  onAuthorsRefresh,
 }) => {
   const { createBook, loading: creating } = useCreateBook();
   const { updateBook, loading: updating } = useUpdateBook();
@@ -194,18 +196,14 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     const result = await importBook(isbnImportValue.trim());
 
     if (result) {
-      // Populate form with imported data
-      setFormData({
-        title: result.title,
-        authorName: result.author?.name || '',
-        isbn: result.isbn,
-        year: result.year.toString(),
-        publisherName: result.publisher?.name || '',
-        description: result.details?.description || '',
-        thumbnail: result.details?.thumbnail || result.details?.smallThumbnail || '',
-      });
+      // Book successfully imported and added to database!
       setShowIsbnImport(false);
       setIsbnImportValue('');
+      // Refresh authors list in case a new author was created
+      onAuthorsRefresh?.();
+      // Close the modal and trigger success callback with the imported book
+      onSuccess?.(result);
+      onClose();
     } else {
       onError?.('Failed to import book. ISBN not found or already in library.');
     }

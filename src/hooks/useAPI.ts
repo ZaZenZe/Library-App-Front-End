@@ -86,6 +86,11 @@ export function useBooks() {
   const [data, setData] = useState<Book[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<APIError | null>(null);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
+
+  const refetch = useCallback(() => {
+    setRefetchTrigger(prev => prev + 1);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -119,9 +124,9 @@ export function useBooks() {
     return () => {
       isMounted = false;
     };
-  }, []); // Empty dependency array - only fetch once on mount
+  }, [refetchTrigger]); // Refetch when trigger changes
 
-  return { data, loading, error };
+  return { data, loading, error, refetch };
 }
 
 /**
@@ -301,6 +306,11 @@ export function useAuthors() {
   const [data, setData] = useState<Author[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<APIError | null>(null);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
+
+  const refetch = useCallback(() => {
+    setRefetchTrigger(prev => prev + 1);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -334,9 +344,9 @@ export function useAuthors() {
     return () => {
       isMounted = false;
     };
-  }, []); // Empty dependency array - only fetch once on mount
+  }, [refetchTrigger]); // Refetch when trigger changes
 
-  return { data, loading, error };
+  return { data, loading, error, refetch };
 }
 
 /**
