@@ -79,8 +79,26 @@
   font-size: 2.4rem;
   animation: pulse 3s ease-in-out infinite;
   
+  &--image {
+    width: 2.8rem;
+    height: 2.8rem;
+    object-fit: contain;
+    animation: none;
+    filter: drop-shadow(0 0 8px rgba($accent-pink, 0.4));
+    transition: filter 0.3s $ease-smooth;
+  }
+  
+  .navigation__logo:hover &--image {
+    filter: drop-shadow(0 0 12px rgba($accent-pink, 0.6));
+  }
+  
   @include mobile {
     font-size: 2rem;
+    
+    &--image {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
   }
 }
 

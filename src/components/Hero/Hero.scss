@@ -40,6 +40,57 @@
 }
 
 // ============================================
+// LOGO
+// ============================================
+
+.hero__logo {
+  margin-bottom: $spacing-lg;
+  animation: float 6s ease-in-out infinite;
+  
+  @include mobile {
+    margin-bottom: $spacing-md;
+  }
+}
+
+.hero__logo-image {
+  width: clamp(120px, 20vw, 200px);
+  height: auto;
+  filter: 
+    drop-shadow(0 0 20px rgba($accent-pink, 0.6))
+    drop-shadow(0 0 40px rgba($accent-cyan, 0.4))
+    drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+  animation: logoGlow 3s ease-in-out infinite;
+  transition: transform 0.3s $ease-smooth;
+  
+  &:hover {
+    transform: scale(1.05);
+    filter: 
+      drop-shadow(0 0 30px rgba($accent-pink, 0.8))
+      drop-shadow(0 0 50px rgba($accent-cyan, 0.6))
+      drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+  }
+  
+  @include mobile {
+    width: clamp(100px, 25vw, 150px);
+  }
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    filter: 
+      drop-shadow(0 0 20px rgba($accent-pink, 0.6))
+      drop-shadow(0 0 40px rgba($accent-cyan, 0.4))
+      drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+  }
+  50% {
+    filter: 
+      drop-shadow(0 0 30px rgba($accent-pink, 0.8))
+      drop-shadow(0 0 60px rgba($accent-cyan, 0.6))
+      drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+  }
+}
+
+// ============================================
 // TITLE
 // ============================================
 

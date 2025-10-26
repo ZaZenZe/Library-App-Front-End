@@ -113,6 +113,24 @@ function Hero({ onBrowseBooksClick, onExploreAuthorsClick }: HeroProps) {
       transition={{ duration: 0.6 }}
     >
       <div className="hero__content">
+        {/* Logo Image */}
+        <motion.div 
+          className="hero__logo"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ 
+            duration: 1.2, 
+            ease: "backOut",
+            delay: 0.2 
+          }}
+        >
+          <img 
+            src="/library_rsde.png" 
+            alt="Library Logo" 
+            className="hero__logo-image"
+          />
+        </motion.div>
+
         {/* Main Title */}
         <h1 ref={titleRef} className="hero__title">
           <span className="hero__title-line">DIGITAL</span>

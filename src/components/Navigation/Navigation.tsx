@@ -105,7 +105,11 @@ function Navigation({ onNavigate, isHidden = false }: NavigationProps) {
           onClick={() => handleNavClick('hero', '.hero')}
           aria-label="Go to home"
         >
-          <span className="navigation__logo-icon">📚</span>
+          <img 
+            src="/library_rsde.png" 
+            alt="Library Logo" 
+            className="navigation__logo-icon navigation__logo-icon--image"
+          />
           <span className="navigation__logo-text">DIGITAL LIBRARY</span>
         </button>
 
