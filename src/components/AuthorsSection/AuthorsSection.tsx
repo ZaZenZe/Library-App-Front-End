@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { Author, APIError } from '../../types/api';
 import { AuthorCard } from './AuthorCard';
+import { useDebounce } from '../../hooks/useDebounce';
 import './AuthorsSection.scss';
 
 interface AuthorsSectionProps {
@@ -21,20 +22,24 @@ export const AuthorsSection: React.FC<AuthorsSectionProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'bookCount'>('name');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Filter authors by search term
-  const filteredAuthors = authors.filter((author) =>
-    author.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter and sort authors with debounced search
+  const sortedAuthors = useMemo(() => {
+    // Filter authors by debounced search term
+    const filtered = authors.filter((author) =>
+      author.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    );
 
-  // Sort authors
-  const sortedAuthors = [...filteredAuthors].sort((a, b) => {
-    if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
-    } else {
-      return (b.books?.length || 0) - (a.books?.length || 0);
-    }
-  });
+    // Sort authors
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name);
+      } else {
+        return (b.books?.length || 0) - (a.books?.length || 0);
+      }
+    });
+  }, [authors, debouncedSearchTerm, sortBy]);
 
   const renderContent = () => {
     // Loading state

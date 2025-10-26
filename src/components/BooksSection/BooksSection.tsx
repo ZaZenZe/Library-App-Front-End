@@ -6,6 +6,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BookCard } from '../BookCard';
+import { useDebounce } from '../../hooks/useDebounce';
 import type { Book, APIError } from '../../types/api';
 import './BooksSection.scss';
 
@@ -19,20 +20,21 @@ interface BooksSectionProps {
 
 function BooksSection({ onBookClick, onAddBookClick, books, loading, error }: BooksSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Filter books based on search term
+  // Filter books based on debounced search term
   const filteredBooks = useMemo(() => {
     if (!books) return [];
-    if (!searchTerm) return books;
+    if (!debouncedSearchTerm) return books;
 
-    const term = searchTerm.toLowerCase();
+    const term = debouncedSearchTerm.toLowerCase();
     return books.filter(
       (book) =>
         book.title.toLowerCase().includes(term) ||
         book.isbn?.toLowerCase().includes(term) ||
         book.author?.name.toLowerCase().includes(term)
     );
-  }, [books, searchTerm]);
+  }, [books, debouncedSearchTerm]);
 
   const renderContent = () => {
     if (loading) {
