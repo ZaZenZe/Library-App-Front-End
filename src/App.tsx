@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Book, Author } from './types/api'
 import { useBooks, useAuthors } from './hooks/useAPI'
 import { useToast } from './hooks/useToast'
@@ -29,6 +29,28 @@ function App() {
 
   // Toast notifications
   const { toasts, removeToast, success, error } = useToast()
+
+  // Hide scrollbar during loading
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100vh';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [isLoading]);
 
   // Fetch books and authors ONCE at app level - prevent duplicate API calls
   const { data: books, loading: booksLoading, error: booksError } = useBooks()

@@ -14,6 +14,13 @@
   overflow: hidden;
   transition: opacity 0.8s $ease-smooth;
   
+  // Force hide scrollbar on body when loading screen is active
+  & {
+    body {
+      overflow: hidden !important;
+    }
+  }
+  
   &--complete {
     opacity: 0;
     pointer-events: none;
@@ -73,61 +80,166 @@
 
 .loading-screen__content {
   @include flex-column-center;
-  gap: $spacing-3xl;
+  gap: $spacing-2xl;
   position: relative;
   z-index: 1;
   animation: fadeIn 0.6s $ease-smooth;
 }
 
 // ============================================
-// CIRCULAR VISUALIZER
+// BOOK STACK ANIMATION
+// ============================================
+
+.loading-screen__book-stack {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  
+  @include mobile {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+.loading-screen__book {
+  position: absolute;
+  width: 80px;
+  height: 100px;
+  background: linear-gradient(135deg, $accent-cyan, $accent-blue);
+  border-radius: 4px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  @include hardware-accelerate;
+  
+  .book-spine {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3));
+    border-radius: 4px 0 0 4px;
+  }
+  
+  &--1 {
+    background: linear-gradient(135deg, $accent-pink, $accent-purple);
+    transform: rotate(-15deg) translateX(-40px) translateY(-10px);
+    animation: bookFloat1 3s ease-in-out infinite;
+    z-index: 1;
+  }
+  
+  &--2 {
+    background: linear-gradient(135deg, $accent-cyan, $accent-teal);
+    transform: rotate(-5deg) translateX(-15px) translateY(5px);
+    animation: bookFloat2 3.5s ease-in-out infinite 0.5s;
+    z-index: 2;
+  }
+  
+  &--3 {
+    background: linear-gradient(135deg, $accent-purple, $accent-blue);
+    transform: rotate(5deg) translateX(15px) translateY(0px);
+    animation: bookFloat3 3.2s ease-in-out infinite 1s;
+    z-index: 3;
+  }
+  
+  &--4 {
+    background: linear-gradient(135deg, $accent-teal, $accent-cyan);
+    transform: rotate(15deg) translateX(40px) translateY(-15px);
+    animation: bookFloat4 3.8s ease-in-out infinite 1.5s;
+    z-index: 4;
+  }
+  
+  @include mobile {
+    width: 60px;
+    height: 80px;
+    
+    .book-spine {
+      width: 8px;
+    }
+    
+    &--1 {
+      transform: rotate(-15deg) translateX(-30px) translateY(-5px);
+    }
+    
+    &--2 {
+      transform: rotate(-5deg) translateX(-10px) translateY(0px);
+    }
+    
+    &--3 {
+      transform: rotate(5deg) translateX(10px) translateY(-5px);
+    }
+    
+    &--4 {
+      transform: rotate(15deg) translateX(30px) translateY(-10px);
+    }
+  }
+}
+
+@keyframes bookFloat1 {
+  0%, 100% {
+    transform: rotate(-15deg) translateX(-40px) translateY(-10px);
+  }
+  50% {
+    transform: rotate(-18deg) translateX(-40px) translateY(-20px);
+  }
+}
+
+@keyframes bookFloat2 {
+  0%, 100% {
+    transform: rotate(-5deg) translateX(-15px) translateY(5px);
+  }
+  50% {
+    transform: rotate(-8deg) translateX(-15px) translateY(-5px);
+  }
+}
+
+@keyframes bookFloat3 {
+  0%, 100% {
+    transform: rotate(5deg) translateX(15px) translateY(0px);
+  }
+  50% {
+    transform: rotate(8deg) translateX(15px) translateY(-10px);
+  }
+}
+
+@keyframes bookFloat4 {
+  0%, 100% {
+    transform: rotate(15deg) translateX(40px) translateY(-15px);
+  }
+  50% {
+    transform: rotate(18deg) translateX(40px) translateY(-25px);
+  }
+}
+
+// ============================================
+// LIBRARY ICON
+// ============================================
+
+.loading-screen__icon {
+  font-size: clamp(4rem, 8vw, 6rem);
+  animation: bounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba($accent-pink, 0.5));
+}
+
+// ============================================
+// REMOVED CIRCULAR VISUALIZER (keeping for reference if needed)
 // ============================================
 
 .loading-screen__visualizer {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  @include hardware-accelerate;
-  
-  @include mobile {
-    width: 160px;
-    height: 160px;
-  }
+  display: none;
 }
 
 .loading-screen__ring {
-  @include absolute-cover;
-  transform-origin: center;
-  
-  &--outer {
-    animation: spin 3s linear infinite;
-  }
-  
-  &--middle {
-    animation: spin 4s linear infinite reverse;
-  }
-  
-  &--inner {
-    animation: spin 5s linear infinite;
-  }
-  
-  circle {
-    transform: rotate(-90deg);
-    transform-origin: center;
-    transition: stroke-dashoffset 0.3s $ease-smooth;
-    filter: drop-shadow(0 0 10px currentColor);
-  }
+  display: none;
 }
 
-// Center Percentage Display
 .loading-screen__percentage {
-  @include absolute-center;
-  font-size: clamp(3.2rem, 5vw, 4.8rem);
-  font-weight: $font-weight-black;
-  font-family: $font-heading;
-  @include text-gradient($accent-pink, $accent-purple);
-  text-shadow: 0 0 30px rgba(234, 122, 207, 0.5);
-  animation: pulse 2s ease-in-out infinite;
+  display: none;
 }
 
 // ============================================
@@ -157,10 +269,10 @@
 
 .loading-screen__progress-bar {
   width: clamp(280px, 50vw, 400px);
-  height: 6px;
+  height: 8px;
   background: rgba($deep-blue, 0.6);
   border-radius: $radius-full;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   border: 1px solid $border-glow;
   box-shadow: 
@@ -169,7 +281,7 @@
   
   @include mobile {
     width: clamp(240px, 80vw, 320px);
-    height: 4px;
+    height: 6px;
   }
 }
 
@@ -191,27 +303,75 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 100px;
-    height: 100%;
+    bottom: 0;
+    width: 100%;
     background: linear-gradient(
       90deg,
-      transparent,
-      rgba(white, 0.3),
-      transparent
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
     );
-    animation: shimmer 2s linear infinite;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+}
+
+.loading-screen__progress-text {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  font-family: $font-mono;
+  font-size: 1.4rem;
+  font-weight: $font-weight-bold;
+  color: $accent-cyan;
+  text-shadow: 0 0 10px rgba($accent-cyan, 0.8);
+  
+  @include mobile {
+    font-size: 1.2rem;
+    top: -25px;
   }
 }
 
 // ============================================
-// DECORATIVE DOTS
+// SUBTITLE
+// ============================================
+
+.loading-screen__subtitle {
+  font-family: $font-mono;
+  font-size: clamp(1.2rem, 2vw, 1.4rem);
+  color: rgba($foreground, 0.7);
+  text-align: center;
+  letter-spacing: 0.1em;
+  animation: fadeInOut 2s ease-in-out infinite;
+  
+  @include mobile {
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// ============================================
+// DECORATIVE DOTS (REMOVED - keeping for reference)
 // ============================================
 
 .loading-screen__dots {
-  display: flex;
-  gap: $spacing-md;
-  justify-content: center;
-  margin-top: $spacing-lg;
+  display: none;
 }
 
 .loading-screen__dot {

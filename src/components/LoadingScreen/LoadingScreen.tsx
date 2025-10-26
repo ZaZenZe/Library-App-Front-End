@@ -76,75 +76,25 @@ export function LoadingScreen({
 
       {/* Main Content */}
       <div className="loading-screen__content">
-        {/* Circular Visualizer */}
-        <div className="loading-screen__visualizer">
-          {/* Outer Ring */}
-          <svg className="loading-screen__ring loading-screen__ring--outer" viewBox="0 0 200 200">
-            <circle
-              cx="100"
-              cy="100"
-              r="90"
-              fill="none"
-              stroke="url(#gradient-outer)"
-              strokeWidth="2"
-              strokeDasharray="565"
-              strokeDashoffset={565 - (565 * progress) / 100}
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="gradient-outer" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="var(--accent-teal)" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="var(--accent-cyan)" stopOpacity="0.8" />
-              </linearGradient>
-            </defs>
-          </svg>
-
-          {/* Middle Ring */}
-          <svg className="loading-screen__ring loading-screen__ring--middle" viewBox="0 0 200 200">
-            <circle
-              cx="100"
-              cy="100"
-              r="70"
-              fill="none"
-              stroke="url(#gradient-middle)"
-              strokeWidth="3"
-              strokeDasharray="440"
-              strokeDashoffset={440 - (440 * progress) / 100}
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="gradient-middle" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="var(--accent-blue)" stopOpacity="0.6" />
-              </linearGradient>
-            </defs>
-          </svg>
-
-          {/* Inner Ring */}
-          <svg className="loading-screen__ring loading-screen__ring--inner" viewBox="0 0 200 200">
-            <circle
-              cx="100"
-              cy="100"
-              r="50"
-              fill="none"
-              stroke="url(#gradient-inner)"
-              strokeWidth="4"
-              strokeDasharray="314"
-              strokeDashoffset={314 - (314 * progress) / 100}
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="gradient-inner" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="var(--accent-blue)" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="var(--accent-purple)" stopOpacity="0.4" />
-              </linearGradient>
-            </defs>
-          </svg>
-
-          {/* Center Percentage */}
-          <div className="loading-screen__percentage">
-            {progress}%
+        {/* Book Stack Animation */}
+        <div className="loading-screen__book-stack">
+          <div className="loading-screen__book loading-screen__book--1">
+            <div className="book-spine"></div>
           </div>
+          <div className="loading-screen__book loading-screen__book--2">
+            <div className="book-spine"></div>
+          </div>
+          <div className="loading-screen__book loading-screen__book--3">
+            <div className="book-spine"></div>
+          </div>
+          <div className="loading-screen__book loading-screen__book--4">
+            <div className="book-spine"></div>
+          </div>
+        </div>
+
+        {/* Library Logo/Icon */}
+        <div className="loading-screen__icon">
+          📚
         </div>
 
         {/* Loading Text with Font Cycling */}
@@ -161,14 +111,18 @@ export function LoadingScreen({
             className="loading-screen__progress-fill"
             style={{ width: `${progress}%` }}
           />
+          <div className="loading-screen__progress-text">
+            {progress}%
+          </div>
         </div>
 
-        {/* Decorative Dots */}
-        <div className="loading-screen__dots">
-          <span className="loading-screen__dot" />
-          <span className="loading-screen__dot" />
-          <span className="loading-screen__dot" />
-        </div>
+        {/* Fun Loading Messages */}
+        <p className="loading-screen__subtitle">
+          {progress < 30 && "Opening the catalog..."}
+          {progress >= 30 && progress < 60 && "Dusting off the shelves..."}
+          {progress >= 60 && progress < 90 && "Organizing by Dewey Decimal..."}
+          {progress >= 90 && "Almost ready to browse!"}
+        </p>
       </div>
     </div>
   );

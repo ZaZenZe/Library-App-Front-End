@@ -2,6 +2,13 @@
    APP GLOBAL STYLES - Sakura Theme
    ============================================ */
 
+/* Hide scrollbar when body has overflow hidden */
+body.loading {
+  overflow: hidden !important;
+  height: 100vh;
+  width: 100vw;
+}
+
 #root {
   width: 100%;
   min-height: 100vh;

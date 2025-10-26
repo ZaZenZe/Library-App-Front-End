@@ -2,6 +2,7 @@
 // MIXINS - Reusable Sass Patterns
 // ============================================
 
+@use 'sass:color';
 @import './variables';
 
 // ============================================
@@ -317,7 +318,7 @@
     border-radius: $radius-full;
     
     &:hover {
-      background: linear-gradient(180deg, lighten($accent-teal, 10%), lighten($accent-cyan, 10%));
+      background: linear-gradient(180deg, color.adjust($accent-teal, $lightness: 10%), color.adjust($accent-cyan, $lightness: 10%));
     }
   }
 }
