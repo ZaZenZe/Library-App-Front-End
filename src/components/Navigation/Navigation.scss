@@ -60,7 +60,7 @@
   transition: all 0.3s $ease-smooth;
   
   &:hover {
-    background: rgba($accent-teal, 0.1);
+    background: rgba(234, 122, 207, 0.1);
     transform: translateY(-2px);
   }
   
@@ -84,7 +84,7 @@
   font-size: clamp(1.4rem, 2vw, 1.8rem);
   letter-spacing: 0.1em;
   color: $foreground;
-  text-shadow: 0 0 20px rgba($accent-teal, 0.5);
+  text-shadow: 0 0 20px rgba(234, 122, 207, 0.5);
   animation: neonGlow 3s ease-in-out infinite;
   
   @include mobile {
@@ -150,7 +150,7 @@
     left: 50%;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, $accent-teal, $accent-cyan);
+    background: linear-gradient(90deg, $accent-pink, $accent-purple);
     transform: translateX(-50%);
     transition: width 0.3s $ease-smooth;
   }
@@ -169,11 +169,11 @@
   }
   
   &--active {
-    color: $accent-teal;
+    color: $accent-pink;
     
     &::after {
       width: 100%;
-      box-shadow: 0 0 10px $accent-teal;
+      box-shadow: 0 0 10px rgba(234, 122, 207, 0.6);
     }
   }
   
@@ -212,7 +212,7 @@
   transition: all 0.3s $ease-smooth;
   
   &:hover {
-    background: rgba($accent-teal, 0.1);
+    background: rgba(234, 122, 207, 0.1);
   }
   
   &:focus-visible {
@@ -227,10 +227,10 @@
 .navigation__hamburger {
   width: 24px;
   height: 2px;
-  background: $accent-teal;
+  background: $accent-pink;
   border-radius: 2px;
   transition: all 0.3s $ease-smooth;
-  box-shadow: 0 0 8px rgba($accent-teal, 0.5);
+  box-shadow: 0 0 8px rgba(234, 122, 207, 0.5);
   
   .navigation__links--open ~ .navigation__mobile-toggle & {
     &:nth-child(1) {
@@ -297,3 +297,4 @@
     }
   }
 }
+

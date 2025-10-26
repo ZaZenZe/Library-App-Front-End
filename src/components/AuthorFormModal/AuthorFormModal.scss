@@ -1,0 +1,298 @@
+@use '../../styles/variables' as *;
+
+.author-form-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+
+  &__content {
+    background: linear-gradient(135deg, rgba(6, 20, 44, 0.98), rgba(10, 22, 40, 0.95));
+    border: 2px solid rgba(234, 122, 207, 0.3);
+    border-radius: 2.4rem;
+    padding: 4rem;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 
+      0 0 60px rgba(234, 122, 207, 0.3),
+      0 0 120px rgba(110, 199, 215, 0.2),
+      inset 0 0 80px rgba(200, 154, 217, 0.05);
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(234, 122, 207, 0.1);
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, $accent-pink, $accent-purple);
+      border-radius: 10px;
+
+      &:hover {
+        background: linear-gradient(180deg, lighten($accent-pink, 10%), lighten($accent-purple, 10%));
+      }
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: transparent;
+    border: 2px solid rgba(234, 122, 207, 0.3);
+    color: $accent-pink;
+    font-size: 2.4rem;
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+
+    &:hover:not(:disabled) {
+      background: rgba(234, 122, 207, 0.2);
+      border-color: $accent-pink;
+      box-shadow: 0 0 20px rgba(234, 122, 207, 0.5);
+      transform: rotate(90deg);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__header {
+    margin-bottom: 3rem;
+  }
+
+  &__title {
+    font-size: clamp(2.8rem, 4vw, 3.6rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, $accent-pink, $accent-purple);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    font-size: 1.6rem;
+    color: $muted-text;
+    margin: 0;
+  }
+}
+
+.author-form {
+  &__error-banner {
+    background: rgba(255, 68, 102, 0.15);
+    border: 2px solid rgba(255, 68, 102, 0.4);
+    border-radius: 1.2rem;
+    padding: 1.6rem;
+    margin-bottom: 2.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    animation: shake 0.5s ease;
+
+    span {
+      font-size: 2.4rem;
+    }
+
+    p {
+      color: $error;
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+  }
+
+  &__field {
+    margin-bottom: 2.4rem;
+  }
+
+  &__label {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: $accent-cyan;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+
+    .required {
+      color: $error;
+      margin-left: 0.4rem;
+    }
+
+    .optional {
+      color: $muted-text;
+      font-weight: 400;
+      text-transform: none;
+      font-size: 1.2rem;
+      margin-left: 0.4rem;
+    }
+  }
+
+  &__input,
+  &__textarea {
+    width: 100%;
+    padding: 1.4rem 1.8rem;
+    font-size: 1.6rem;
+    font-family: inherit;
+    color: $foreground;
+    background: rgba(234, 122, 207, 0.08);
+    border: 2px solid rgba(234, 122, 207, 0.3);
+    border-radius: 1.2rem;
+    transition: all 0.3s ease;
+
+    &::placeholder {
+      color: $muted-text;
+      opacity: 0.6;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $accent-pink;
+      background: rgba(234, 122, 207, 0.12);
+      box-shadow: 0 0 20px rgba(234, 122, 207, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &.error {
+      border-color: $error;
+      background: rgba(255, 68, 102, 0.1);
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  &__error {
+    display: block;
+    color: $error;
+    font-size: 1.3rem;
+    margin-top: 0.6rem;
+    font-weight: 600;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1.6rem;
+    margin-top: 3rem;
+
+    .btn {
+      flex: 1;
+      padding: 1.6rem 3.2rem;
+      font-size: 1.6rem;
+      font-weight: 700;
+      border-radius: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.1rem;
+
+      &--primary {
+        background: linear-gradient(135deg, $accent-pink, $accent-purple);
+        color: $foreground;
+        border-color: transparent;
+
+        &:hover:not(:disabled) {
+          box-shadow: 0 0 30px rgba(234, 122, 207, 0.6);
+          transform: translateY(-2px);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+
+      &--secondary {
+        background: transparent;
+        color: $accent-cyan;
+        border-color: rgba(110, 199, 215, 0.5);
+
+        &:hover:not(:disabled) {
+          background: rgba(110, 199, 215, 0.1);
+          border-color: $accent-cyan;
+          box-shadow: 0 0 20px rgba(110, 199, 215, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .author-form-modal {
+    padding: 1rem;
+
+    &__content {
+      padding: 2.4rem;
+      border-radius: 1.6rem;
+      max-height: 95vh;
+    }
+
+    &__close {
+      top: 1rem;
+      right: 1rem;
+      width: 4rem;
+      height: 4rem;
+      font-size: 2rem;
+    }
+
+    &__title {
+      font-size: 2.4rem;
+    }
+  }
+
+  .author-form {
+    &__actions {
+      flex-direction: column;
+
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+}
+

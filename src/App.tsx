@@ -9,6 +9,8 @@ import { BooksSection } from './components/BooksSection'
 import { AuthorsSection } from './components/AuthorsSection'
 import { BookDetailModal } from './components/BookDetailModal'
 import { BookFormModal } from './components/BookFormModal'
+import { AuthorDetailModal } from './components/AuthorDetailModal'
+import { AuthorFormModal } from './components/AuthorFormModal'
 import './App.css'
 
 function App() {
@@ -18,7 +20,10 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [editingBook, setEditingBook] = useState<Book | null>(null)
-  const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null)
+  const [selectedAuthorId, setSelectedAuthorId] = useState<number | null>(null)
+  const [isAuthorModalOpen, setIsAuthorModalOpen] = useState(false)
+  const [editingAuthor, setEditingAuthor] = useState<Author | null>(null)
+  const [isAuthorFormModalOpen, setIsAuthorFormModalOpen] = useState(false)
 
   // Fetch books and authors ONCE at app level - prevent duplicate API calls
   const { data: books, loading: booksLoading, error: booksError } = useBooks()
@@ -90,14 +95,41 @@ function App() {
   }
 
   const handleAuthorClick = (author: Author) => {
-    setSelectedAuthor(author);
-    // TODO: Open author detail modal in next step
-    console.log('Author clicked:', author);
+    setSelectedAuthorId(author.id);
+    setIsAuthorModalOpen(true);
   }
 
   const handleAddAuthor = () => {
-    // TODO: Open add author form in next step
-    console.log('Add author clicked');
+    setEditingAuthor(null);
+    setIsAuthorFormModalOpen(true);
+  }
+
+  const handleEditAuthor = (author: Author) => {
+    setEditingAuthor(author);
+    setIsAuthorModalOpen(false);
+    setIsAuthorFormModalOpen(true);
+  }
+
+  const handleAuthorFormSuccess = () => {
+    setIsAuthorFormModalOpen(false);
+    setEditingAuthor(null);
+    // Authors list will refetch automatically
+  }
+
+  const handleCloseAuthorForm = () => {
+    setIsAuthorFormModalOpen(false);
+    setEditingAuthor(null);
+  }
+
+  const handleAuthorDeleted = () => {
+    setIsAuthorModalOpen(false);
+    setSelectedAuthorId(null);
+    // Authors list will refetch automatically
+  }
+
+  const handleCloseAuthorModal = () => {
+    setIsAuthorModalOpen(false);
+    setSelectedAuthorId(null);
   }
 
   return (
@@ -152,6 +184,23 @@ function App() {
           error={authorsError}
           onAuthorClick={handleAuthorClick}
           onAddAuthor={handleAddAuthor}
+        />
+
+        {/* Author Detail Modal */}
+        <AuthorDetailModal
+          authorId={selectedAuthorId}
+          isOpen={isAuthorModalOpen}
+          onClose={handleCloseAuthorModal}
+          onEdit={handleEditAuthor}
+          onDeleted={handleAuthorDeleted}
+        />
+
+        {/* Author Form Modal (Add/Edit) */}
+        <AuthorFormModal
+          isOpen={isAuthorFormModalOpen}
+          onClose={handleCloseAuthorForm}
+          onSuccess={handleAuthorFormSuccess}
+          editAuthor={editingAuthor}
         />
       </main>
     </>

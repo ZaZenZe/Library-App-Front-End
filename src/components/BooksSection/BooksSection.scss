@@ -54,7 +54,7 @@
   font-weight: $font-weight-black;
   color: $foreground;
   margin: 0;
-  @include text-gradient($accent-teal, $accent-cyan);
+  @include text-gradient($accent-pink, $accent-purple);
 }
 
 .books-section__add-btn {
@@ -117,8 +117,8 @@
   font-size: $font-size-base;
   
   &:focus {
-    border-color: $accent-teal;
-    box-shadow: 0 0 20px rgba($accent-teal, 0.3);
+    border-color: $accent-pink;
+    box-shadow: 0 0 20px rgba(234, 122, 207, 0.3);
   }
   
   &::placeholder {
@@ -134,16 +134,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba($accent-teal, 0.1);
-  border: 1px solid rgba($accent-teal, 0.3);
+  background: rgba(234, 122, 207, 0.1);
+  border: 1px solid rgba(234, 122, 207, 0.3);
   border-radius: 50%;
-  color: $accent-teal;
+  color: $accent-pink;
   font-size: 2.4rem;
   cursor: pointer;
   transition: all 0.3s $ease-smooth;
   
   &:hover {
-    background: rgba($accent-teal, 0.2);
+    background: rgba(234, 122, 207, 0.2);
     transform: rotate(90deg);
   }
   
@@ -185,15 +185,15 @@
 .books-section__cold-start {
   text-align: center;
   padding: $spacing-3xl $spacing-xl;
-  background: linear-gradient(135deg, rgba($accent-cyan, 0.1), rgba($accent-purple, 0.1));
-  border: 2px dashed rgba($accent-cyan, 0.3);
+  background: linear-gradient(135deg, rgba(234, 122, 207, 0.1), rgba(200, 154, 217, 0.1));
+  border: 2px dashed rgba(234, 122, 207, 0.3);
   border-radius: $radius-xl;
   animation: pulse 2s ease-in-out infinite;
   
   h3 {
     font-family: $font-heading;
     font-size: $font-size-xl;
-    color: $accent-cyan;
+    color: $accent-pink;
     margin: $spacing-lg 0 $spacing-md;
   }
 }
@@ -201,8 +201,8 @@
 .books-section__spinner {
   width: 4.8rem;
   height: 4.8rem;
-  border: 4px solid rgba($accent-cyan, 0.2);
-  border-top-color: $accent-cyan;
+  border: 4px solid rgba(234, 122, 207, 0.2);
+  border-top-color: $accent-pink;
   border-radius: 50%;
   margin: 0 auto;
   animation: spin 1s linear infinite;
@@ -381,3 +381,4 @@
     transform: none;
   }
 }
+

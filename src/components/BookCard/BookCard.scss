@@ -19,9 +19,9 @@
   @include hardware-accelerate;
   
   &:hover {
-    border-color: $accent-teal;
+    border-color: $accent-pink;
     box-shadow: 
-      0 0 30px rgba($accent-teal, 0.3),
+      0 0 30px rgba(234, 122, 207, 0.3),
       0 8px 32px rgba($primary-dark, 0.4);
     transform: translateY(-4px);
   }
@@ -114,8 +114,8 @@
   align-items: center;
   gap: $spacing-xs;
   padding: $spacing-xs $spacing-sm;
-  background: rgba($accent-teal, 0.1);
-  border: 1px solid rgba($accent-teal, 0.3);
+  background: rgba(234, 122, 207, 0.1);
+  border: 1px solid rgba(234, 122, 207, 0.3);
   border-radius: $radius-sm;
   width: fit-content;
   margin-top: auto;
@@ -125,7 +125,7 @@
   font-family: $font-mono;
   font-size: 1.1rem;
   font-weight: $font-weight-bold;
-  color: $accent-teal;
+  color: $accent-pink;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -169,12 +169,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba($accent-teal, 0.2);
+  background: rgba(234, 122, 207, 0.2);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba($accent-teal, 0.4);
+  border: 1px solid rgba(234, 122, 207, 0.4);
   border-radius: 50%;
   font-size: 2rem;
-  color: $accent-teal;
+  color: $accent-pink;
   opacity: 0;
   transform: scale(0.8);
   transition: all 0.3s $ease-smooth;
@@ -201,3 +201,4 @@
     transition: none;
   }
 }
+

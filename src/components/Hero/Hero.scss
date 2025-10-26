@@ -143,17 +143,17 @@
   }
   
   &--primary {
-    background: linear-gradient(135deg, $accent-teal, $accent-cyan);
-    color: $primary-dark;
+    background: linear-gradient(135deg, $accent-pink, $accent-purple);
+    color: $foreground;
     border: none;
     box-shadow: 
-      0 0 20px rgba($accent-teal, 0.4),
-      0 4px 20px rgba($accent-teal, 0.3);
+      0 0 20px rgba(234, 122, 207, 0.4),
+      0 4px 20px rgba(234, 122, 207, 0.3);
     
     &:hover {
       box-shadow: 
-        0 0 40px rgba($accent-teal, 0.6),
-        0 6px 30px rgba($accent-teal, 0.4);
+        0 0 40px rgba(234, 122, 207, 0.6),
+        0 6px 30px rgba(234, 122, 207, 0.4);
       transform: translateY(-2px);
     }
     
@@ -168,10 +168,10 @@
     border: 2px solid $accent-cyan;
     
     &:hover {
-      background: rgba($accent-cyan, 0.1);
+      background: rgba(110, 199, 215, 0.1);
       box-shadow: 
-        0 0 30px rgba($accent-cyan, 0.4),
-        inset 0 0 20px rgba($accent-cyan, 0.1);
+        0 0 30px rgba(110, 199, 215, 0.4),
+        inset 0 0 20px rgba(110, 199, 215, 0.1);
       transform: translateY(-2px);
     }
   }
@@ -236,14 +236,14 @@
   font-family: $font-mono;
   font-size: 1.2rem;
   font-weight: $font-weight-medium;
-  color: $accent-teal;
+  color: $accent-pink;
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
 .hero__scroll-arrow {
   font-size: 2.4rem;
-  color: $accent-teal;
+  color: $accent-pink;
   animation: bounce 2s ease-in-out infinite;
 }
 
@@ -273,7 +273,7 @@
   font-family: $font-heading;
   font-weight: $font-weight-black;
   font-size: clamp(6rem, 10vw, 14rem);
-  color: $accent-teal;
+  color: $accent-purple;
   opacity: 0.03;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -346,3 +346,4 @@
     }
   }
 }
+
