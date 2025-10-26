@@ -8,6 +8,7 @@ interface AuthorFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (author: Author) => void;
+  onError?: (message: string) => void;
   editAuthor?: Author | null; // If provided, we're editing; otherwise, creating
 }
 
@@ -25,6 +26,7 @@ export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  onError,
   editAuthor,
 }) => {
   const isEditMode = !!editAuthor;
@@ -142,16 +144,16 @@ export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
       const error = err as { response?: { data?: { error?: string; title?: string; detail?: string } } };
       
       // Handle ASP.NET problem details or simple error
+      let errorMessage = 'Failed to save author. Please try again.';
       if (error.response?.data) {
         const data = error.response.data;
-        setSubmitError(
-          data.error || 
+        errorMessage = data.error || 
           (data.title ? `${data.title}: ${data.detail || ''}` : null) ||
-          'Failed to save author'
-        );
-      } else {
-        setSubmitError('Failed to save author. Please try again.');
+          'Failed to save author';
       }
+      
+      setSubmitError(errorMessage);
+      onError?.(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

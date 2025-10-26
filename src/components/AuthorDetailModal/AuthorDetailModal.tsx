@@ -10,9 +10,10 @@ interface AuthorDetailModalProps {
   onClose: () => void;
   onEdit: (author: Author) => void;
   onDeleted: () => void;
+  onError?: (message: string) => void;
 }
 
-export const AuthorDetailModal = ({ authorId, isOpen, onClose, onEdit, onDeleted }: AuthorDetailModalProps) => {
+export const AuthorDetailModal = ({ authorId, isOpen, onClose, onEdit, onDeleted, onError }: AuthorDetailModalProps) => {
   const [author, setAuthor] = useState<Author | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +55,9 @@ export const AuthorDetailModal = ({ authorId, isOpen, onClose, onEdit, onDeleted
     } catch (err) {
       console.error('Error deleting author:', err);
       const error = err as { response?: { data?: { error?: string } } };
-      setError(error.response?.data?.error || 'Failed to delete author');
+      const errorMessage = error.response?.data?.error || 'Failed to delete author';
+      setError(errorMessage);
+      onError?.(errorMessage);
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);

@@ -10,6 +10,7 @@ interface BookDetailModalProps {
   onClose: () => void;
   onEdit?: (book: Book) => void;
   onDeleted?: () => void;
+  onError?: (message: string) => void;
 }
 
 export const BookDetailModal: React.FC<BookDetailModalProps> = ({
@@ -18,6 +19,7 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
   onClose,
   onEdit,
   onDeleted,
+  onError,
 }) => {
   const { data: book, loading: isLoading, error, execute: refetch } = useBook(bookId || 0, !!bookId);
   const { deleteBook, loading: isDeleting } = useDeleteBook();
@@ -61,7 +63,8 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
         onDeleted?.();
         onClose();
       } else {
-        alert('Failed to delete book. Please try again.');
+        const errorMessage = 'Failed to delete book. Please try again.';
+        onError?.(errorMessage);
       }
     }
   };

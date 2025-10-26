@@ -8,6 +8,7 @@ interface BookFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (book: Book) => void;
+  onError?: (message: string) => void;
   editBook?: Book | null; // If provided, we're editing; otherwise, creating
 }
 
@@ -31,6 +32,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  onError,
   editBook,
 }) => {
   const { data: authors, loading: authorsLoading } = useAuthors();
@@ -144,29 +146,37 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       genre: formData.genre.trim() || undefined, // Optional field
     };
 
-    if (isEditMode && editBook) {
-      // Update existing book
-      const updateData: UpdateBookDTO = bookData;
-      const result = await updateBook(editBook.id, updateData);
+    try {
+      if (isEditMode && editBook) {
+        // Update existing book
+        const updateData: UpdateBookDTO = bookData;
+        const result = await updateBook(editBook.id, updateData);
 
-      if (result) {
-        onSuccess?.(result);
-        onClose();
-      }
-    } else {
-      // Create new book
-      const result = await createBook(bookData);
+        if (result) {
+          onSuccess?.(result);
+          onClose();
+        } else {
+          onError?.('Failed to update book. Please try again.');
+        }
+      } else {
+        // Create new book
+        const result = await createBook(bookData);
 
-      if (result) {
-        onSuccess?.(result);
-        onClose();
+        if (result) {
+          onSuccess?.(result);
+          onClose();
+        } else {
+          onError?.('Failed to add book. Please try again.');
+        }
       }
+    } catch {
+      onError?.(isEditMode ? 'Failed to update book. Please try again.' : 'Failed to add book. Please try again.');
     }
   };
 
   const handleIsbnImport = async () => {
     if (!isbnImportValue.trim()) {
-      alert('Please enter an ISBN to import');
+      onError?.('Please enter an ISBN to import');
       return;
     }
 
@@ -184,7 +194,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       setShowIsbnImport(false);
       setIsbnImportValue('');
     } else {
-      alert('Failed to import book. ISBN not found or already in library.');
+      onError?.('Failed to import book. ISBN not found or already in library.');
     }
   };
 

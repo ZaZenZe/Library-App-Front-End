@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Book, Author } from './types/api'
 import { useBooks, useAuthors } from './hooks/useAPI'
+import { useToast } from './hooks/useToast'
 import { ParallaxBackground } from './components/ParallaxBackground'
 import { LoadingScreen } from './components/LoadingScreen'
 import { Hero } from './components/Hero'
@@ -12,6 +13,7 @@ import { BookDetailModal } from './components/BookDetailModal'
 import { BookFormModal } from './components/BookFormModal'
 import { AuthorDetailModal } from './components/AuthorDetailModal'
 import { AuthorFormModal } from './components/AuthorFormModal'
+import { ToastContainer } from './components/Toast'
 import './App.css'
 
 function App() {
@@ -25,6 +27,9 @@ function App() {
   const [isAuthorModalOpen, setIsAuthorModalOpen] = useState(false)
   const [editingAuthor, setEditingAuthor] = useState<Author | null>(null)
   const [isAuthorFormModalOpen, setIsAuthorFormModalOpen] = useState(false)
+
+  // Toast notifications
+  const { toasts, removeToast, success, error } = useToast()
 
   // Fetch books and authors ONCE at app level - prevent duplicate API calls
   const { data: books, loading: booksLoading, error: booksError } = useBooks()
@@ -70,6 +75,7 @@ function App() {
     // Refresh books list - BooksSection will refetch automatically
     setIsModalOpen(false)
     setSelectedBookId(null)
+    success('Book deleted successfully! 🗑️')
   }
 
   const handleEditBook = (book: Book) => {
@@ -88,6 +94,7 @@ function App() {
     // Refresh books list - BooksSection will refetch automatically
     setIsFormModalOpen(false);
     setEditingBook(null);
+    success(editingBook ? 'Book updated successfully! ✨' : 'Book added to your library! 📚')
   }
 
   const handleCloseForm = () => {
@@ -115,6 +122,7 @@ function App() {
     setIsAuthorFormModalOpen(false);
     setEditingAuthor(null);
     // Authors list will refetch automatically
+    success(editingAuthor ? 'Author profile updated successfully! ✨' : 'Author profile created successfully! 👤')
   }
 
   const handleCloseAuthorForm = () => {
@@ -126,6 +134,7 @@ function App() {
     setIsAuthorModalOpen(false);
     setSelectedAuthorId(null);
     // Authors list will refetch automatically
+    success('Author deleted successfully! 🗑️')
   }
 
   const handleCloseAuthorModal = () => {
@@ -168,6 +177,7 @@ function App() {
           onClose={handleCloseModal}
           onEdit={handleEditBook}
           onDeleted={handleBookDeleted}
+          onError={error}
         />
 
         {/* Book Form Modal (Add/Edit) */}
@@ -176,6 +186,7 @@ function App() {
           onClose={handleCloseForm}
           onSuccess={handleFormSuccess}
           editBook={editingBook}
+          onError={error}
         />
         
         {/* Authors Section */}
@@ -194,6 +205,7 @@ function App() {
           onClose={handleCloseAuthorModal}
           onEdit={handleEditAuthor}
           onDeleted={handleAuthorDeleted}
+          onError={error}
         />
 
         {/* Author Form Modal (Add/Edit) */}
@@ -202,11 +214,15 @@ function App() {
           onClose={handleCloseAuthorForm}
           onSuccess={handleAuthorFormSuccess}
           editAuthor={editingAuthor}
+          onError={error}
         />
 
         {/* Footer */}
         <Footer />
       </main>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onClose={removeToast} />
     </>
   )
 }

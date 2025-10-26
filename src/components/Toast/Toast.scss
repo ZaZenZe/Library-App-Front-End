@@ -1,0 +1,175 @@
+// ============================================
+// TOAST NOTIFICATION STYLES
+// ============================================
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+@import '../../styles/animations';
+
+.toast-container {
+  position: fixed;
+  top: $spacing-xl;
+  right: $spacing-xl;
+  z-index: $z-toast;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  pointer-events: none;
+  max-width: 420px;
+  
+  @include mobile {
+    top: $spacing-lg;
+    right: $spacing-md;
+    left: $spacing-md;
+    max-width: none;
+  }
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  background: rgba($deep-blue, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: $radius-lg;
+  border: 2px solid;
+  box-shadow: 0 8px 32px rgba($primary-dark, 0.6);
+  pointer-events: all;
+  min-width: 320px;
+  
+  @include mobile {
+    min-width: auto;
+    padding: $spacing-sm $spacing-md;
+  }
+  
+  &--success {
+    border-color: rgba($success, 0.5);
+    background: linear-gradient(
+      135deg,
+      rgba($deep-blue, 0.95),
+      rgba($success, 0.1)
+    );
+    
+    .toast__icon {
+      color: $success;
+      text-shadow: 0 0 10px rgba($success, 0.8);
+    }
+  }
+  
+  &--error {
+    border-color: rgba($error, 0.5);
+    background: linear-gradient(
+      135deg,
+      rgba($deep-blue, 0.95),
+      rgba($error, 0.1)
+    );
+    
+    .toast__icon {
+      color: $error;
+      text-shadow: 0 0 10px rgba($error, 0.8);
+    }
+  }
+  
+  &--info {
+    border-color: rgba($accent-cyan, 0.5);
+    background: linear-gradient(
+      135deg,
+      rgba($deep-blue, 0.95),
+      rgba($accent-cyan, 0.1)
+    );
+    
+    .toast__icon {
+      color: $accent-cyan;
+      text-shadow: 0 0 10px rgba($accent-cyan, 0.8);
+    }
+  }
+}
+
+.toast__icon {
+  font-size: 2.4rem;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: rgba($primary-dark, 0.4);
+}
+
+.toast__message {
+  flex: 1;
+  font-family: $font-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $foreground;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.toast__close {
+  font-size: 2.4rem;
+  line-height: 1;
+  color: $muted-text;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s $ease-smooth;
+  flex-shrink: 0;
+  
+  &:hover {
+    color: $foreground;
+    background: rgba($foreground, 0.1);
+    transform: rotate(90deg);
+  }
+  
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+// ============================================
+// REDUCED MOTION
+// ============================================
+
+@include reduced-motion {
+  .toast {
+    animation: none;
+  }
+}
