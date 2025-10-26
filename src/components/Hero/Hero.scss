@@ -13,6 +13,9 @@
   overflow: hidden;
   padding: $spacing-3xl $spacing-lg 0 $spacing-lg;
   
+  // Clip any overflow content
+  clip-path: inset(0);
+  
   @include mobile {
     min-height: 90vh;
     padding: $spacing-2xl $spacing-md 0 $spacing-md;
@@ -340,6 +343,7 @@
   overflow: hidden;
   pointer-events: none;
   z-index: 1;
+  display: none; // Temporarily hide to test if this is the issue
 }
 
 .hero__decoration-text {
@@ -362,7 +366,7 @@
   
   &--2 {
     top: 20%;
-    right: -5%;
+    right: -2%;
     transform: rotate(15deg);
     animation: floatSlow 30s ease-in-out infinite 2s;
   }
@@ -376,7 +380,7 @@
   
   &--4 {
     bottom: 15%;
-    right: 10%;
+    right: 5%;
     transform: rotate(12deg);
     animation: floatSlow 32s ease-in-out infinite 6s;
   }
