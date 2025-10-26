@@ -7,6 +7,7 @@ import { Hero } from './components/Hero'
 import { Navigation } from './components/Navigation'
 import { BooksSection } from './components/BooksSection'
 import { AuthorsSection } from './components/AuthorsSection'
+import { Footer } from './components/Footer'
 import { BookDetailModal } from './components/BookDetailModal'
 import { BookFormModal } from './components/BookFormModal'
 import { AuthorDetailModal } from './components/AuthorDetailModal'
@@ -202,6 +203,9 @@ function App() {
           onSuccess={handleAuthorFormSuccess}
           editAuthor={editingAuthor}
         />
+
+        {/* Footer */}
+        <Footer />
       </main>
     </>
   )

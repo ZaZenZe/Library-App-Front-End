@@ -132,7 +132,7 @@ function Navigation({ onNavigate }: NavigationProps) {
           <li>
             <button
               className="navigation__link"
-              onClick={() => handleNavClick('about', '.about-section')}
+              onClick={() => handleNavClick('about', '#about')}
             >
               About
             </button>

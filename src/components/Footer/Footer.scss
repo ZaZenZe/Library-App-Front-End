@@ -1,0 +1,262 @@
+// ============================================
+// FOOTER STYLES
+// ============================================
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+@import '../../styles/animations';
+
+.footer {
+  position: relative;
+  padding: $spacing-lg $spacing-lg;
+  background: transparent;
+  border-top: 1px solid rgba($accent-pink, 0.1);
+  overflow: hidden;
+  margin-top: 0;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba($accent-pink, 0.3) 20%,
+      rgba($accent-cyan, 0.3) 50%,
+      rgba($accent-purple, 0.3) 80%,
+      transparent 100%
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  
+  @include mobile {
+    padding: $spacing-md $spacing-md;
+  }
+}
+
+// ============================================
+// CONTAINER
+// ============================================
+
+.footer__container {
+  max-width: 1600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+// ============================================
+// CONTENT
+// ============================================
+
+.footer__content {
+  @include flex-column-center;
+  gap: $spacing-xs;
+  text-align: center;
+}
+
+.footer__text {
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $foreground;
+  margin: 0;
+  animation: colorShift 3s ease-in-out infinite;
+  text-shadow: 
+    0 0 20px rgba($accent-pink, 0.6),
+    0 0 40px rgba($accent-cyan, 0.4);
+  transition: font-family 0.3s $ease-smooth;
+  
+  @include mobile {
+    font-size: clamp(1.4rem, 2vw, 1.8rem);
+  }
+}
+
+.footer__credits {
+  font-family: $font-primary;
+  font-size: clamp(1.2rem, 1.5vw, 1.4rem);
+  color: $muted-text;
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.footer__project {
+  font-size: clamp(1.2rem, 1.4vw, 1.4rem);
+  font-weight: $font-weight-medium;
+  letter-spacing: 0.05em;
+  color: $foreground;
+  margin: 0;
+  animation: colorShift 3s ease-in-out infinite;
+  text-shadow: 
+    0 0 15px rgba($accent-pink, 0.4),
+    0 0 25px rgba($accent-cyan, 0.3);
+  transition: font-family 0.3s $ease-smooth;
+  
+  @include mobile {
+    font-size: clamp(1.1rem, 1.3vw, 1.2rem);
+  }
+}
+
+.footer__author {
+  font-size: clamp(1.3rem, 1.6vw, 1.6rem);
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $foreground;
+  margin: $spacing-xs 0 0;
+  animation: colorShift 3s ease-in-out infinite;
+  animation-delay: 1s; // Offset animation slightly
+  text-shadow: 
+    0 0 15px rgba($accent-pink, 0.4),
+    0 0 25px rgba($accent-cyan, 0.3);
+  transition: font-family 0.3s $ease-smooth;
+  
+  strong {
+    color: inherit;
+    font-weight: $font-weight-black;
+    text-shadow: 
+      0 0 20px rgba($accent-cyan, 0.6),
+      0 0 30px rgba($accent-pink, 0.4);
+  }
+  
+  @include mobile {
+    font-size: clamp(1.2rem, 1.5vw, 1.4rem);
+  }
+}
+
+.footer__year {
+  font-family: $font-mono;
+  font-size: 1.2rem;
+  color: rgba($muted-text, 0.6);
+  margin: $spacing-md 0 0;
+  letter-spacing: 0.1em;
+}
+
+// ============================================
+// FLOATING DECIMALS
+// ============================================
+
+.footer__decimals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.decimal {
+  position: absolute;
+  font-family: $font-mono;
+  font-size: clamp(1.2rem, 1.5vw, 1.6rem);
+  font-weight: $font-weight-bold;
+  color: rgba($accent-cyan, 0.15);
+  letter-spacing: 0.15em;
+  opacity: 0;
+  animation: floatDecimal 20s ease-in-out infinite;
+  
+  &:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+  
+  &:nth-child(2) {
+    top: 60%;
+    left: 5%;
+    animation-delay: 4s;
+  }
+  
+  &:nth-child(3) {
+    top: 40%;
+    right: 15%;
+    animation-delay: 8s;
+  }
+  
+  &:nth-child(4) {
+    top: 70%;
+    right: 5%;
+    animation-delay: 12s;
+  }
+  
+  &:nth-child(5) {
+    top: 30%;
+    left: 50%;
+    animation-delay: 16s;
+  }
+}
+
+// ============================================
+// COLOR SHIFT ANIMATION
+// ============================================
+
+@keyframes colorShift {
+  0% {
+    color: $accent-pink;
+    text-shadow: 
+      0 0 20px rgba($accent-pink, 0.6),
+      0 0 40px rgba($accent-pink, 0.4);
+  }
+  33% {
+    color: $accent-cyan;
+    text-shadow: 
+      0 0 20px rgba($accent-cyan, 0.6),
+      0 0 40px rgba($accent-cyan, 0.4);
+  }
+  66% {
+    color: $accent-purple;
+    text-shadow: 
+      0 0 20px rgba($accent-purple, 0.6),
+      0 0 40px rgba($accent-purple, 0.4);
+  }
+  100% {
+    color: $accent-pink;
+    text-shadow: 
+      0 0 20px rgba($accent-pink, 0.6),
+      0 0 40px rgba($accent-pink, 0.4);
+  }
+}
+
+// ============================================
+// FLOAT DECIMAL ANIMATION
+// ============================================
+
+@keyframes floatDecimal {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) translateX(20px);
+  }
+}
+
+// ============================================
+// REDUCED MOTION
+// ============================================
+
+@include reduced-motion {
+  .footer__text {
+    animation: none;
+    color: $accent-pink;
+  }
+  
+  .decimal {
+    animation: none;
+    opacity: 0.15;
+  }
+  
+  .footer::before {
+    animation: none;
+  }
+}
