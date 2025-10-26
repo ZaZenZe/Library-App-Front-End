@@ -1,6 +1,6 @@
 # Library App - Interactive Book Management System (React + TypeScript)
 ### - Made by Sayan "Ricky" DE
-- **Live Demo**: [Coming Soon](#) 
+- **Live Demo**: [Library-App-Front-End RSDE on Render.com](https://library-app-front-end-rsde.onrender.com) 
 - **Backend API**: [Library-App-DOT-NET](https://github.com/ZaZenZe/Library-App-DOT-NET/tree/extra_features_FF)
 
 This project was built for the Front-End Framework lecture at our University. It's a modern, interactive library management application featuring a beautiful parallax design, dynamic book/author management, and seamless ISBN import functionality. Built with React, TypeScript, GSAP, and Framer Motion for smooth, professional animations.
