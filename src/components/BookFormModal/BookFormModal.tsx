@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Book, CreateBookDTO, UpdateBookDTO } from '../../types/api';
-import { useAuthors, useCreateBook, useUpdateBook, useImportBook } from '../../hooks/useAPI';
+import { useCreateBook, useUpdateBook, useImportBook } from '../../hooks/useAPI';
 import './BookFormModal.scss';
 
 interface BookFormModalProps {
@@ -14,7 +14,7 @@ interface BookFormModalProps {
 
 interface FormData {
   title: string;
-  authorId: string;
+  authorName: string; // Changed from authorId to authorName
   isbn: string;
   year: string;
   publisherName: string; // Publisher name
@@ -24,7 +24,7 @@ interface FormData {
 
 interface FormErrors {
   title?: string;
-  authorId?: string;
+  authorName?: string; // Changed from authorId to authorName
   isbn?: string;
   year?: string;
   publisherName?: string;
@@ -39,7 +39,6 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   onError,
   editBook,
 }) => {
-  const { data: authors, loading: authorsLoading } = useAuthors();
   const { createBook, loading: creating } = useCreateBook();
   const { updateBook, loading: updating } = useUpdateBook();
   const { importBook, loading: importing } = useImportBook();
@@ -47,7 +46,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const isEditMode = !!editBook;
   const [formData, setFormData] = useState<FormData>({
     title: '',
-    authorId: '',
+    authorName: '',
     isbn: '',
     year: '',
     publisherName: '',
@@ -63,7 +62,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     if (editBook) {
       setFormData({
         title: editBook.title,
-        authorId: editBook.authorId.toString(),
+        authorName: editBook.author?.name || '',
         isbn: editBook.isbn,
         year: editBook.year.toString(),
         publisherName: editBook.publisher?.name || '',
@@ -74,7 +73,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       // Reset form when not editing
       setFormData({
         title: '',
-        authorId: '',
+        authorName: '',
         isbn: '',
         year: '',
         publisherName: '',
@@ -117,8 +116,8 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       newErrors.title = 'Title is required';
     }
 
-    if (!formData.authorId) {
-      newErrors.authorId = 'Please select an author';
+    if (!formData.authorName.trim()) {
+      newErrors.authorName = 'Author name is required';
     }
 
     if (!formData.isbn.trim()) {
@@ -150,7 +149,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
 
     const bookData: CreateBookDTO = {
       title: formData.title.trim(),
-      authorId: parseInt(formData.authorId),
+      authorName: formData.authorName.trim(),
       isbn: formData.isbn.trim(),
       year: parseInt(formData.year),
       publisherName: formData.publisherName.trim() || undefined,
@@ -198,7 +197,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       // Populate form with imported data
       setFormData({
         title: result.title,
-        authorId: result.authorId.toString(),
+        authorName: result.author?.name || '',
         isbn: result.isbn,
         year: result.year.toString(),
         publisherName: result.publisher?.name || '',
@@ -342,31 +341,22 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                 )}
               </div>
 
-              {/* Author Dropdown */}
+              {/* Author Name Field */}
               <div className="book-form-modal__field">
                 <label htmlFor="book-author" className="book-form-modal__label">
                   Author *
                 </label>
-                {authorsLoading ? (
-                  <div className="book-form-modal__loading-select">Loading authors...</div>
-                ) : (
-                  <select
-                    id="book-author"
-                    className={`book-form-modal__select ${errors.authorId ? 'book-form-modal__select--error' : ''}`}
-                    value={formData.authorId}
-                    onChange={(e) => handleInputChange('authorId', e.target.value)}
-                    disabled={isSubmitting}
-                  >
-                    <option value="">Select an author</option>
-                    {authors?.map((author) => (
-                      <option key={author.id} value={author.id}>
-                        {author.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                {errors.authorId && (
-                  <span className="book-form-modal__error">{errors.authorId}</span>
+                <input
+                  id="book-author"
+                  type="text"
+                  className={`book-form-modal__input ${errors.authorName ? 'book-form-modal__input--error' : ''}`}
+                  placeholder="Stephen King, J.K. Rowling, etc."
+                  value={formData.authorName}
+                  onChange={(e) => handleInputChange('authorName', e.target.value)}
+                  disabled={isSubmitting}
+                />
+                {errors.authorName && (
+                  <span className="book-form-modal__error">{errors.authorName}</span>
                 )}
               </div>
 

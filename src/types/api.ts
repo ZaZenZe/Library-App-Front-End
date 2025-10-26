@@ -57,7 +57,7 @@ export interface Book {
 
 export interface CreateBookDTO {
   title: string;
-  authorId: number;
+  authorName: string; // Author name as string (backend will find or create)
   isbn: string;
   year: number;
   publisherId?: number | null; // Optional publisher
@@ -69,7 +69,7 @@ export interface CreateBookDTO {
 
 export interface UpdateBookDTO {
   title: string;
-  authorId: number;
+  authorName: string; // Author name as string
   isbn: string;
   year: number;
   publisherId?: number | null;
