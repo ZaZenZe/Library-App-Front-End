@@ -16,18 +16,19 @@
     padding: 1rem;
   }
 
-  // Backdrop with blur effect
+  // Backdrop with blur effect - Sakura theme
   &__backdrop {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba($primary-dark, 0.85);
-    backdrop-filter: blur(20px);
+    background: rgba($primary-dark, 0.92);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
   }
 
-  // Modal container
+  // Modal container - Sakura theme with fixed positioning
   &__container {
     position: relative;
     z-index: 1;
@@ -35,17 +36,22 @@
     max-width: 900px;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden; // Prevent horizontal scroll issues
     background: linear-gradient(
       135deg,
-      rgba($deep-blue, 0.98) 0%,
-      rgba($primary-dark, 0.98) 100%
+      rgba(10, 10, 10, 0.98) 0%,
+      rgba(0, 0, 0, 0.98) 100%
     );
-    border: 1px solid $border-glow;
+    border: 1px solid $border-glow; // Sakura Pink border
     border-radius: 2.4rem;
     box-shadow: 
-      0 0 60px rgba($accent-teal, 0.2),
-      0 20px 60px rgba(0, 0, 0, 0.5);
+      0 0 60px rgba($accent-pink, 0.25),
+      0 0 30px rgba($accent-cyan, 0.15),
+      0 20px 60px rgba(0, 0, 0, 0.7);
     padding: 4rem;
+    
+    // Prevent content overflow
+    contain: layout style paint;
 
     @include custom-scrollbar;
 
@@ -58,10 +64,11 @@
     @media (max-width: $breakpoint-mobile) {
       padding: 2rem 1.6rem;
       border-radius: 1.6rem;
+      max-height: 90vh;
     }
   }
 
-  // Close button
+  // Close button - Sakura theme
   &__close {
     position: absolute;
     top: 2rem;
@@ -71,24 +78,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba($foreground, 0.05);
-    border: 1px solid rgba($accent-teal, 0.3);
+    background: rgba($accent-pink, 0.08);
+    border: 1px solid rgba($accent-pink, 0.3);
     border-radius: 50%;
     color: $foreground;
     font-size: 2.4rem;
     cursor: pointer;
     transition: all $timing-normal;
     z-index: 10;
+    flex-shrink: 0; // Prevent button from shrinking
 
     &:hover {
-      background: rgba($accent-teal, 0.2);
-      border-color: $accent-teal;
+      background: rgba($accent-pink, 0.25);
+      border-color: $accent-pink;
       transform: rotate(90deg) scale(1.1);
-      box-shadow: 0 0 20px rgba($accent-teal, 0.4);
+      box-shadow: 0 0 25px rgba($accent-pink, 0.5);
+      color: $accent-pink;
     }
 
     &:focus {
-      @include focus-ring($accent-teal);
+      @include focus-ring($accent-pink);
     }
 
     @media (max-width: $breakpoint-mobile) {
@@ -100,7 +109,7 @@
     }
   }
 
-  // Loading state
+  // Loading state - Sakura theme
   &__loading {
     display: flex;
     flex-direction: column;
@@ -110,7 +119,10 @@
     gap: 2rem;
 
     p {
-      @include text-gradient;
+      background: linear-gradient(90deg, $accent-pink 0%, $accent-cyan 50%, $accent-purple 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       font-size: 1.8rem;
       font-family: $font-heading;
       text-transform: uppercase;
@@ -122,13 +134,13 @@
   &__spinner {
     width: 6rem;
     height: 6rem;
-    border: 4px solid rgba($accent-teal, 0.2);
-    border-top-color: $accent-teal;
+    border: 4px solid rgba($accent-pink, 0.2);
+    border-top-color: $accent-pink;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
 
-  // Error state
+  // Error state - Sakura theme
   &__error {
     display: flex;
     flex-direction: column;
@@ -167,21 +179,23 @@
     font-size: 1.6rem;
   }
 
-  // Content layout
+  // Content layout - Fixed to prevent overflow
   &__content {
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 4rem;
-    padding-right: 4rem; // Space for close button
+    padding-right: 6rem; // Extra space for close button
+    align-items: start; // Prevent stretching
 
     @media (max-width: $breakpoint-tablet) {
       grid-template-columns: 1fr;
       gap: 3rem;
-      padding-right: 0;
+      padding-right: 6rem; // Keep space for close button
     }
 
     @media (max-width: $breakpoint-mobile) {
       gap: 2rem;
+      padding-right: 5rem;
     }
   }
 
@@ -189,6 +203,7 @@
   &__cover-section {
     display: flex;
     justify-content: center;
+    flex-shrink: 0; // Prevent shrinking
 
     @media (max-width: $breakpoint-tablet) {
       justify-content: center;
@@ -201,10 +216,12 @@
     border-radius: 1.6rem;
     position: relative;
     overflow: hidden;
+    flex-shrink: 0; // Prevent shrinking
     box-shadow: 
-      0 20px 60px rgba(0, 0, 0, 0.4),
-      0 0 30px rgba($accent-teal, 0.2);
-    border: 2px solid rgba($accent-teal, 0.3);
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 0 30px rgba($accent-pink, 0.25),
+      0 0 15px rgba($accent-cyan, 0.15);
+    border: 2px solid rgba($accent-pink, 0.4);
 
     @media (max-width: $breakpoint-tablet) {
       width: 250px;
@@ -223,8 +240,8 @@
     bottom: 0;
     background: linear-gradient(
       135deg,
-      rgba(0, 0, 0, 0.3) 0%,
-      rgba(0, 0, 0, 0.6) 100%
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.5) 100%
     );
     display: flex;
     align-items: center;
@@ -253,6 +270,8 @@
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    min-width: 0; // Allow flex item to shrink properly
+    overflow: hidden; // Prevent content overflow
 
     @media (max-width: $breakpoint-mobile) {
       gap: 2rem;
@@ -266,13 +285,18 @@
     color: $foreground;
     line-height: 1.2;
     margin: 0 0 1rem 0;
-    @include text-gradient;
+    word-wrap: break-word; // Prevent long titles from overflowing
+    background: linear-gradient(90deg, $accent-pink 0%, $accent-cyan 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   &__author {
     font-size: 2rem;
     color: $muted-text;
     margin: 0;
+    word-wrap: break-word; // Prevent overflow
 
     span {
       color: $accent-cyan;
@@ -281,14 +305,14 @@
     }
   }
 
-  // Metadata grid
+  // Metadata grid - Sakura theme
   &__meta {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 2rem;
     padding: 2rem 0;
-    border-top: 1px solid rgba($accent-teal, 0.2);
-    border-bottom: 1px solid rgba($accent-teal, 0.2);
+    border-top: 1px solid rgba($accent-pink, 0.25);
+    border-bottom: 1px solid rgba($accent-pink, 0.25);
 
     @media (max-width: $breakpoint-mobile) {
       grid-template-columns: 1fr;
@@ -316,13 +340,14 @@
     color: $foreground;
     font-weight: 600;
     font-family: $font-mono;
+    word-wrap: break-word; // Prevent overflow
     
     &:first-letter {
-      color: $accent-teal;
+      color: $accent-pink;
     }
   }
 
-  // Action buttons
+  // Action buttons - Sakura theme
   &__actions {
     display: flex;
     gap: 1.6rem;
@@ -361,28 +386,28 @@
       @include focus-ring;
     }
 
-    // Edit button
+    // Edit button - Miku Cyan
     &--edit {
       color: $accent-cyan;
-      border-color: rgba($accent-cyan, 0.3);
+      border-color: rgba($accent-cyan, 0.4);
 
       &:hover {
-        background: rgba($accent-cyan, 0.15);
+        background: rgba($accent-cyan, 0.2);
         border-color: $accent-cyan;
-        box-shadow: 0 0 30px rgba($accent-cyan, 0.3);
+        box-shadow: 0 0 30px rgba($accent-cyan, 0.4);
         transform: translateY(-2px);
       }
     }
 
-    // Delete button
+    // Delete button - Sakura Pink (error color)
     &--delete {
-      color: $error;
-      border-color: rgba($error, 0.3);
+      color: $error; // Now Sakura Pink
+      border-color: rgba($error, 0.4);
 
       &:hover {
-        background: rgba($error, 0.15);
+        background: rgba($error, 0.2);
         border-color: $error;
-        box-shadow: 0 0 30px rgba($error, 0.3);
+        box-shadow: 0 0 30px rgba($error, 0.4);
         transform: translateY(-2px);
       }
     }

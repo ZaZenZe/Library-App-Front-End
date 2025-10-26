@@ -78,14 +78,14 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
     }
   };
 
-  // Generate cover color (same logic as BookCard)
+  // Generate cover color - Sakura/Miku theme
   const generateCoverColor = (title: string): string => {
     const colors = [
-      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #EA7ACF 0%, #C89AD9 100%)', // Sakura Pink → Lavender Rose
+      'linear-gradient(135deg, #6EC7D7 0%, #EA7ACF 100%)', // Miku Cyan → Sakura Pink
+      'linear-gradient(135deg, #C89AD9 0%, #6EC7D7 100%)', // Lavender Rose → Miku Cyan
+      'linear-gradient(135deg, #EA7ACF 0%, #6EC7D7 100%)', // Sakura Pink → Miku Cyan
+      'linear-gradient(135deg, #6EC7D7 0%, #C89AD9 100%)', // Miku Cyan → Lavender Rose
     ];
 
     let hash = 0;

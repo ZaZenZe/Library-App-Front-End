@@ -1,5 +1,5 @@
 // ============================================
-// PARALLAX BACKGROUND STYLES
+// PARALLAX BACKGROUND STYLES - Sakura Theme
 // ============================================
 
 @import '../../styles/variables';
@@ -12,8 +12,12 @@
   overflow: hidden;
   pointer-events: none;
   
-  // Base background gradient
-  background: linear-gradient(135deg, #0a1628 0%, #041329 100%);
+  // Base background gradient - Pure black with subtle pink/cyan
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(234, 122, 207, 0.03) 50%,
+    rgba(0, 0, 0, 1) 100%
+  );
 }
 
 // ============================================
@@ -49,25 +53,25 @@
 }
 
 // ============================================
-// LAYER 1 - HERO SECTION
+// LAYER 1 - HERO SECTION (Sakura Pink)
 // ============================================
 
 .parallax-background__layer--1 {
   background: 
-    linear-gradient(135deg, rgba(10, 22, 40, 0.8) 0%, rgba(4, 19, 41, 0.9) 100%),
+    linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%),
     repeating-linear-gradient(
       90deg,
       transparent 0px,
-      transparent 80px,
-      rgba(46, 255, 211, 0.02) 80px,
-      rgba(46, 255, 211, 0.02) 82px
+      transparent 100px,
+      rgba(234, 122, 207, 0.02) 100px,
+      rgba(234, 122, 207, 0.02) 101px
     ),
     repeating-linear-gradient(
       0deg,
       transparent 0px,
-      transparent 80px,
-      rgba(46, 255, 211, 0.02) 80px,
-      rgba(46, 255, 211, 0.02) 82px
+      transparent 100px,
+      rgba(110, 199, 215, 0.02) 100px,
+      rgba(110, 199, 215, 0.02) 101px
     );
   
   // Large typographic background text
@@ -79,8 +83,8 @@
     font-size: clamp(6rem, 12vw, 10rem);
     font-weight: $font-weight-black;
     font-family: $font-heading;
-    color: $accent-teal;
-    opacity: 0.03;
+    color: $accent-pink;
+    opacity: 0.04;
     white-space: nowrap;
     transform: rotate(-15deg);
     letter-spacing: 2rem;
@@ -98,8 +102,8 @@
     background: linear-gradient(
       180deg,
       transparent 0%,
-      rgba(46, 255, 211, 0.1) 20%,
-      rgba(46, 255, 211, 0.1) 80%,
+      rgba(110, 199, 215, 0.2) 20%,
+      rgba(234, 122, 207, 0.2) 80%,
       transparent 100%
     );
     transform: rotate(15deg);
@@ -114,14 +118,14 @@
 }
 
 // ============================================
-// LAYER 2 - BROWSE BOOKS SECTION
+// LAYER 2 - BROWSE BOOKS SECTION (Miku Cyan)
 // ============================================
 
 .parallax-background__layer--2 {
   background: 
-    radial-gradient(circle at 30% 40%, rgba(35, 198, 255, 0.08), transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(46, 255, 211, 0.06), transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(198, 86, 255, 0.05), transparent 40%);
+    radial-gradient(circle at 30% 40%, rgba(110, 199, 215, 0.12), transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(234, 122, 207, 0.08), transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(200, 154, 217, 0.06), transparent 40%);
   
   // Subtle grid overlay
   &::before {
@@ -131,22 +135,22 @@
       repeating-linear-gradient(
         45deg,
         transparent,
-        transparent 80px,
-        rgba(46, 255, 211, 0.015) 80px,
-        rgba(46, 255, 211, 0.015) 82px
+        transparent 100px,
+        rgba(110, 199, 215, 0.03) 100px,
+        rgba(110, 199, 215, 0.03) 101px
       );
   }
 }
 
 // ============================================
-// LAYER 3 - AUTHORS SECTION
+// LAYER 3 - AUTHORS SECTION (Lavender Rose)
 // ============================================
 
 .parallax-background__layer--3 {
   background: 
-    linear-gradient(180deg, rgba(4, 19, 41, 0.9) 0%, rgba(6, 20, 44, 0.8) 100%),
-    radial-gradient(circle at 20% 30%, rgba(46, 255, 211, 0.1), transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(35, 198, 255, 0.08), transparent 40%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 10, 0.9) 100%),
+    radial-gradient(circle at 20% 30%, rgba(200, 154, 217, 0.15), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(234, 122, 207, 0.12), transparent 40%);
   
   // Large decorative quote mark
   &::before {
@@ -157,8 +161,8 @@
     font-size: clamp(20rem, 30vw, 40rem);
     font-weight: $font-weight-black;
     font-family: $font-heading;
-    color: $accent-teal;
-    opacity: 0.02;
+    color: $accent-purple;
+    opacity: 0.04;
     line-height: 1;
   }
   
@@ -172,7 +176,7 @@
     font-weight: $font-weight-black;
     font-family: $font-heading;
     color: $accent-cyan;
-    opacity: 0.02;
+    opacity: 0.04;
     line-height: 1;
     transform: rotate(180deg);
   }
@@ -190,9 +194,10 @@
     position: absolute;
     font-family: $font-heading;
     font-weight: $font-weight-bold;
-    color: $accent-teal;
-    opacity: 0.04;
+    color: $accent-pink; // Sakura Pink for library terms
+    opacity: 0.06; // Increased for better visibility
     white-space: nowrap;
+    text-shadow: 0 0 15px rgba(234, 122, 207, 0.2);
     @include hardware-accelerate;
   }
 }
@@ -207,8 +212,8 @@
     &:nth-child(3) { top: 50%; left: 5%; animation: floatSlow 22s ease-in-out infinite 4s; }
     &:nth-child(4) { top: 65%; right: 20%; animation: floatSlow 24s ease-in-out infinite 6s; }
     &:nth-child(5) { top: 80%; left: 25%; animation: floatSlow 26s ease-in-out infinite 8s; }
-    &:nth-child(6) { top: 40%; right: 5%; animation: floatSlow 23s ease-in-out infinite 10s; opacity: 0.03; }
-    &:nth-child(7) { top: 70%; left: 50%; animation: floatSlow 21s ease-in-out infinite 12s; opacity: 0.03; }
+    &:nth-child(6) { top: 40%; right: 5%; animation: floatSlow 23s ease-in-out infinite 10s; opacity: 0.04; }
+    &:nth-child(7) { top: 70%; left: 50%; animation: floatSlow 21s ease-in-out infinite 12s; opacity: 0.04; }
   }
 }
 
@@ -217,8 +222,9 @@
   span {
     font-size: clamp(2rem, 4vw, 4rem);
     font-family: $font-mono;
-    opacity: 0.05;
-    color: $accent-cyan;
+    opacity: 0.08; // Increased visibility
+    color: $accent-cyan; // Miku Cyan for numbers
+    text-shadow: 0 0 15px rgba(110, 199, 215, 0.2);
     
     &:nth-child(1) { top: 10%; left: 15%; animation: floatText 18s ease-in-out infinite; }
     &:nth-child(2) { top: 20%; right: 20%; animation: floatText 20s ease-in-out infinite 1s; }
@@ -228,8 +234,8 @@
     &:nth-child(6) { top: 65%; right: 30%; animation: floatText 23s ease-in-out infinite 5s; }
     &:nth-child(7) { top: 75%; left: 35%; animation: floatText 20s ease-in-out infinite 6s; }
     &:nth-child(8) { top: 85%; right: 15%; animation: floatText 24s ease-in-out infinite 7s; }
-    &:nth-child(9) { top: 25%; left: 50%; animation: floatText 19s ease-in-out infinite 8s; opacity: 0.03; }
-    &:nth-child(10) { top: 60%; right: 45%; animation: floatText 21s ease-in-out infinite 9s; opacity: 0.03; }
+    &:nth-child(9) { top: 25%; left: 50%; animation: floatText 19s ease-in-out infinite 8s; opacity: 0.05; }
+    &:nth-child(10) { top: 60%; right: 45%; animation: floatText 21s ease-in-out infinite 9s; opacity: 0.05; }
   }
 }
 
@@ -243,10 +249,11 @@
     font-family: $font-primary;
     font-weight: $font-weight-medium;
     font-size: clamp(1.6rem, 3vw, 3rem);
-    color: $accent-blue;
-    opacity: 0.06;
+    color: $accent-purple; // Lavender Rose for keywords
+    opacity: 0.08; // Increased visibility
     text-transform: uppercase;
     letter-spacing: 0.2em;
+    text-shadow: 0 0 12px rgba(200, 154, 217, 0.2);
     @include hardware-accelerate;
     
     &:nth-child(1) { top: 12%; left: 8%; animation: floatMedium 22s ease-in-out infinite; }
@@ -254,11 +261,11 @@
     &:nth-child(3) { top: 42%; left: 18%; animation: floatMedium 20s ease-in-out infinite 4s; }
     &:nth-child(4) { top: 58%; right: 8%; animation: floatMedium 26s ease-in-out infinite 6s; }
     &:nth-child(5) { top: 72%; left: 12%; animation: floatMedium 23s ease-in-out infinite 8s; }
-    &:nth-child(6) { top: 18%; right: 25%; animation: floatMedium 21s ease-in-out infinite 10s; opacity: 0.04; }
-    &:nth-child(7) { top: 48%; left: 40%; animation: floatMedium 25s ease-in-out infinite 12s; opacity: 0.04; }
-    &:nth-child(8) { top: 68%; right: 35%; animation: floatMedium 22s ease-in-out infinite 14s; opacity: 0.04; }
-    &:nth-child(9) { top: 82%; left: 45%; animation: floatMedium 24s ease-in-out infinite 16s; opacity: 0.04; }
-    &:nth-child(10) { top: 38%; right: 50%; animation: floatMedium 20s ease-in-out infinite 18s; opacity: 0.04; }
+    &:nth-child(6) { top: 18%; right: 25%; animation: floatMedium 21s ease-in-out infinite 10s; opacity: 0.05; }
+    &:nth-child(7) { top: 48%; left: 40%; animation: floatMedium 25s ease-in-out infinite 12s; opacity: 0.05; }
+    &:nth-child(8) { top: 68%; right: 35%; animation: floatMedium 22s ease-in-out infinite 14s; opacity: 0.05; }
+    &:nth-child(9) { top: 82%; left: 45%; animation: floatMedium 24s ease-in-out infinite 16s; opacity: 0.05; }
+    &:nth-child(10) { top: 38%; right: 50%; animation: floatMedium 20s ease-in-out infinite 18s; opacity: 0.05; }
   }
 }
 
@@ -329,37 +336,43 @@
 }
 
 // ============================================
-// SCROLLING TEXT ANIMATIONS (Layer 2 & 3)
+// SCROLLING TEXT ANIMATIONS (Layer 2 & 3) - Sakura Theme
 // ============================================
 
 .parallax-background__scrolling-text {
   position: absolute;
   white-space: nowrap;
   display: flex;
-  gap: 4rem;
+  gap: 6rem;
   font-family: $font-heading;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.5rem;
   overflow: hidden;
   
   span {
     display: inline-block;
-    padding: 0 2rem;
-    color: $accent-teal;
-    opacity: 0.08;
-    font-size: clamp(2rem, 3vw, 4rem);
+    padding: 0 3rem;
+    color: $accent-cyan;
+    opacity: 0.15;
+    font-size: clamp(2.5rem, 4vw, 5rem);
     text-transform: uppercase;
     white-space: nowrap;
+    text-shadow: 0 0 20px rgba(110, 199, 215, 0.3);
   }
 }
 
-// Diagonal scrolling for books (Layer 2)
+// Diagonal scrolling for books (Layer 2) - Miku Cyan
 .parallax-background__scrolling-text--diagonal-1 {
-  top: 10%;
+  top: 15%;
   left: -50%;
   width: 200%;
-  transform: rotate(-25deg);
-  animation: scrollDiagonal1 60s linear infinite;
+  transform: rotate(-20deg);
+  animation: scrollDiagonal1 50s linear infinite;
+  
+  span {
+    color: $accent-cyan;
+    opacity: 0.2;
+  }
   
   @include reduced-motion {
     animation: none;
@@ -367,14 +380,16 @@
 }
 
 .parallax-background__scrolling-text--diagonal-2 {
-  top: 60%;
+  top: 65%;
   left: -50%;
   width: 200%;
-  transform: rotate(25deg);
-  animation: scrollDiagonal2 80s linear infinite;
+  transform: rotate(20deg);
+  animation: scrollDiagonal2 70s linear infinite;
   
   span {
-    opacity: 0.05;
+    color: $accent-pink;
+    opacity: 0.12;
+    text-shadow: 0 0 20px rgba(234, 122, 207, 0.3);
   }
   
   @include reduced-motion {
@@ -382,16 +397,18 @@
   }
 }
 
-// Horizontal scrolling for authors (Layer 3)
+// Horizontal scrolling for authors (Layer 3) - Lavender Rose
 .parallax-background__scrolling-text--horizontal-1 {
-  top: 20%;
+  top: 25%;
   left: -50%;
   width: 200%;
-  animation: scrollHorizontal 70s linear infinite;
+  animation: scrollHorizontal 60s linear infinite;
   
   span {
-    opacity: 0.1;
-    font-size: clamp(3rem, 4vw, 5rem);
+    opacity: 0.18;
+    font-size: clamp(3.5rem, 5vw, 6rem);
+    color: $accent-purple;
+    text-shadow: 0 0 25px rgba(200, 154, 217, 0.4);
   }
   
   @include reduced-motion {

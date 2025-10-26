@@ -1,30 +1,32 @@
 // ============================================
-// DESIGN TOKENS - Color Palette
+// DESIGN TOKENS - Color Palette (Updated Sakura Theme)
 // ============================================
 
 // Primary Colors
-$primary-dark: #03060f;
-$deep-blue: #06142c;
-$foreground: #e6f7ff;
-$muted-text: rgba(230, 247, 255, 0.64);
+$primary-dark: #000000;
+$deep-blue: #0a0a0a;
+$foreground: #D6D6D6;
+$muted-text: rgba(214, 214, 214, 0.7);
 
-// Accent Colors (Neon)
-$accent-teal: #2effd3;
-$accent-cyan: #00d4d4;
-$accent-blue: #23c6ff;
-$accent-purple: #c656ff;
-$accent-pink: #ff69b4;
+// Accent Colors (Sakura/Miku Theme)
+$accent-pink: #EA7ACF;      // Sakura Pink
+$accent-purple: #C89AD9;    // Lavender Rose
+$accent-cyan: #6EC7D7;      // Miku Cyan
+$accent-teal: #6EC7D7;      // Alias for Miku Cyan
+$accent-blue: #6EC7D7;      // Alias for consistency
+$subtext-grey: #D6D6D6;     // Subtext Grey
 
 // UI States
-$border-glow: rgba(46, 255, 211, 0.2);
-$success: #00ff88;
-$error: #ff4466;
-$warning: #ffaa00;
-$info: #23c6ff;
+$border-glow: rgba(234, 122, 207, 0.3);  // Sakura Pink glow
+$border-cyan: rgba(110, 199, 215, 0.3);  // Miku Cyan glow
+$success: #6EC7D7;
+$error: #EA7ACF;
+$warning: #C89AD9;
+$info: #6EC7D7;
 
 // Background Gradients
-$bg-gradient-primary: linear-gradient(135deg, #0a1628 0%, #041329 100%);
-$bg-gradient-radial: radial-gradient(circle at 30% 40%, rgba(35, 198, 255, 0.08), transparent 50%);
+$bg-gradient-primary: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+$bg-gradient-radial: radial-gradient(circle at 30% 40%, rgba(234, 122, 207, 0.08), transparent 50%);
 
 // ============================================
 // TYPOGRAPHY
