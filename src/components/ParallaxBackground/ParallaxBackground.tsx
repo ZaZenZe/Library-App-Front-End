@@ -3,9 +3,14 @@
 // ============================================
 
 import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useMouseParallax } from '../../hooks/useMouseParallax';
 import type { Book, Author } from '../../types/api';
 import './ParallaxBackground.scss';
+
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
 
 interface ParallaxBackgroundProps {
   activeLayer?: 1 | 2 | 3; // Which layer is currently active
@@ -17,6 +22,7 @@ export function ParallaxBackground({ activeLayer = 1, books, authors }: Parallax
   const layer1Ref = useRef<HTMLDivElement>(null);
   const layer2Ref = useRef<HTMLDivElement>(null);
   const layer3Ref = useRef<HTMLDivElement>(null);
+  const [currentLayer, setCurrentLayer] = useState<1 | 2 | 3>(1); // Always start with layer 1
   
   // Create repeated book/author names for scrolling effect
   const [bookNames, setBookNames] = useState<string[]>([]);
@@ -39,6 +45,48 @@ export function ParallaxBackground({ activeLayer = 1, books, authors }: Parallax
       setAuthorNames(repeated);
     }
   }, [authors]);
+
+  // Setup scroll-triggered layer activation
+  useEffect(() => {
+    // Only run on desktop/tablet (not mobile)
+    if (window.innerWidth < 768) return;
+
+    const triggers: ScrollTrigger[] = [];
+
+    // Layer 1 - Active from top to books section
+    const layer1Trigger = ScrollTrigger.create({
+      trigger: '.hero',
+      start: 'top top',
+      end: 'bottom center',
+      onEnter: () => setCurrentLayer(1),
+      onEnterBack: () => setCurrentLayer(1),
+    });
+    triggers.push(layer1Trigger);
+
+    // Layer 2 - Active during books section
+    const layer2Trigger = ScrollTrigger.create({
+      trigger: '.books-section',
+      start: 'top center',
+      end: 'bottom center',
+      onEnter: () => setCurrentLayer(2),
+      onEnterBack: () => setCurrentLayer(2),
+    });
+    triggers.push(layer2Trigger);
+
+    // Layer 3 - Active during authors section
+    const layer3Trigger = ScrollTrigger.create({
+      trigger: '.authors-section',
+      start: 'top center',
+      end: 'bottom bottom',
+      onEnter: () => setCurrentLayer(3),
+      onEnterBack: () => setCurrentLayer(3),
+    });
+    triggers.push(layer3Trigger);
+
+    return () => {
+      triggers.forEach(trigger => trigger.kill());
+    };
+  }, []);
   
   // Mouse parallax effect (disabled on mobile)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
@@ -68,7 +116,7 @@ export function ParallaxBackground({ activeLayer = 1, books, authors }: Parallax
       {/* Layer 1 - Hero Section Background */}
       <div 
         ref={layer1Ref}
-        className={`parallax-background__layer parallax-background__layer--1 ${activeLayer === 1 ? 'active' : ''}`}
+        className={`parallax-background__layer parallax-background__layer--1 ${currentLayer === 1 ? 'active' : ''}`}
       >
         {/* SVG Grid Pattern */}
         <svg className="parallax-background__svg-pattern" xmlns="http://www.w3.org/2000/svg">
@@ -99,7 +147,7 @@ export function ParallaxBackground({ activeLayer = 1, books, authors }: Parallax
       {/* Layer 2 - Browse Books Section Background - DYNAMIC SCROLLING BOOK NAMES */}
       <div 
         ref={layer2Ref}
-        className={`parallax-background__layer parallax-background__layer--2 ${activeLayer === 2 ? 'active' : ''}`}
+        className={`parallax-background__layer parallax-background__layer--2 ${currentLayer === 2 ? 'active' : ''}`}
       >
         {/* Diagonal Scrolling Book Names */}
         <div className="parallax-background__scrolling-text parallax-background__scrolling-text--diagonal-1">
@@ -158,7 +206,7 @@ export function ParallaxBackground({ activeLayer = 1, books, authors }: Parallax
       {/* Layer 3 - Authors Section Background - DYNAMIC SCROLLING AUTHOR NAMES */}
       <div 
         ref={layer3Ref}
-        className={`parallax-background__layer parallax-background__layer--3 ${activeLayer === 3 ? 'active' : ''}`}
+        className={`parallax-background__layer parallax-background__layer--3 ${currentLayer === 3 ? 'active' : ''}`}
       >
         {/* Horizontal Scrolling Author Names */}
         <div className="parallax-background__scrolling-text parallax-background__scrolling-text--horizontal-1">

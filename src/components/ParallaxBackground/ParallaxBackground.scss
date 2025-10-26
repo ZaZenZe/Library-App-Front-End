@@ -443,19 +443,19 @@
 
 @keyframes scrollDiagonal1 {
   0% {
-    transform: rotate(-25deg) translateX(0);
+    transform: rotate(-20deg) translateX(0);
   }
   100% {
-    transform: rotate(-25deg) translateX(-50%);
+    transform: rotate(-20deg) translateX(-50%);
   }
 }
 
 @keyframes scrollDiagonal2 {
   0% {
-    transform: rotate(25deg) translateX(0);
+    transform: rotate(20deg) translateX(0);
   }
   100% {
-    transform: rotate(25deg) translateX(50%);
+    transform: rotate(20deg) translateX(50%);
   }
 }
 
