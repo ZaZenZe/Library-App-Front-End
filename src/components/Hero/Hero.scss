@@ -11,11 +11,11 @@
   min-height: 100vh;
   @include flex-center;
   overflow: hidden;
-  padding: $spacing-2xl $spacing-lg;
+  padding: $spacing-3xl $spacing-lg 0 $spacing-lg;
   
   @include mobile {
     min-height: 90vh;
-    padding: $spacing-xl $spacing-md;
+    padding: $spacing-2xl $spacing-md 0 $spacing-md;
   }
 }
 
@@ -31,6 +31,8 @@
   position: relative;
   z-index: 2;
   text-align: center;
+  margin-top: $spacing-3xl;
+  padding: 0;
   
   @include mobile {
     gap: $spacing-xl;

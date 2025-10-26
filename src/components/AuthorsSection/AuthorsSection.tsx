@@ -146,6 +146,8 @@ export const AuthorsSection: React.FC<AuthorsSectionProps> = ({
           <div className="authors-section__search">
             <span className="authors-section__search-icon">🔍</span>
             <input
+              id="search-authors"
+              name="search-authors"
               type="text"
               placeholder="Search authors..."
               value={searchTerm}

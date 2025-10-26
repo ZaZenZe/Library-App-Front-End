@@ -104,3 +104,5 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({ author, onClick }) => {
     </motion.div>
   );
 };
+
+export default AuthorCard;

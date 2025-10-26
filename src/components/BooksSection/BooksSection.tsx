@@ -146,6 +146,8 @@ function BooksSection({ onBookClick, onAddBookClick, books = [], loading = false
           <div className="books-section__search">
             <span className="books-section__search-icon">🔍</span>
             <input
+              id="search-books"
+              name="search-books"
               type="text"
               placeholder="Search by title, author, or ISBN..."
               value={searchTerm}

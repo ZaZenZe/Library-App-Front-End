@@ -13,12 +13,11 @@ import './ParallaxBackground.scss';
 gsap.registerPlugin(ScrollTrigger);
 
 interface ParallaxBackgroundProps {
-  activeLayer?: 1 | 2 | 3; // Which layer is currently active
   books?: Book[]; // Pass books data from parent to avoid duplicate API calls
   authors?: Author[]; // Pass authors data from parent to avoid duplicate API calls
 }
 
-export function ParallaxBackground({ activeLayer = 1, books, authors }: ParallaxBackgroundProps) {
+export function ParallaxBackground({ books, authors }: ParallaxBackgroundProps) {
   const layer1Ref = useRef<HTMLDivElement>(null);
   const layer2Ref = useRef<HTMLDivElement>(null);
   const layer3Ref = useRef<HTMLDivElement>(null);

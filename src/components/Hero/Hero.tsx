@@ -56,12 +56,11 @@ function Hero({ onBrowseBooksClick, onExploreAuthorsClick }: HeroProps) {
         '-=0.4'
       );
 
-      // CTA buttons stagger
+      // CTA buttons stagger (removed opacity animation to keep buttons visible)
       tl.from(
         '.hero__cta-btn',
         {
           y: 20,
-          opacity: 0,
           duration: 0.6,
           stagger: 0.2,
           ease: 'back.out(1.7)',

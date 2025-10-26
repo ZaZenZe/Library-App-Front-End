@@ -17,7 +17,6 @@ import { ToastContainer } from './components/Toast'
 import './App.css'
 
 function App() {
-  const [activeLayer, setActiveLayer] = useState<1 | 2 | 3>(1)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedBookId, setSelectedBookId] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -36,7 +35,6 @@ function App() {
   const { data: authors, loading: authorsLoading, error: authorsError } = useAuthors()
 
   const handleBrowseBooks = () => {
-    setActiveLayer(2)
     const booksSection = document.querySelector('.books-section')
     if (booksSection) {
       booksSection.scrollIntoView({ behavior: 'smooth' })
@@ -44,7 +42,6 @@ function App() {
   }
 
   const handleExploreAuthors = () => {
-    setActiveLayer(3)
     const authorsSection = document.querySelector('.authors-section')
     if (authorsSection) {
       authorsSection.scrollIntoView({ behavior: 'smooth' })
@@ -52,12 +49,10 @@ function App() {
   }
 
   const handleNavigate = (section: 'hero' | 'books' | 'authors' | 'about') => {
-    if (section === 'books') {
-      setActiveLayer(2)
-    } else if (section === 'authors') {
-      setActiveLayer(3)
-    } else if (section === 'hero') {
-      setActiveLayer(1)
+    // Scroll to appropriate section (no need to manage activeLayer - ParallaxBackground handles it automatically)
+    const targetSection = document.querySelector(`.${section === 'hero' ? 'hero' : section === 'books' ? 'books-section' : 'authors-section'}`)
+    if (targetSection) {
+      targetSection.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
@@ -153,7 +148,6 @@ function App() {
       
       {/* Pass books and authors data to ParallaxBackground to prevent duplicate API calls */}
       <ParallaxBackground 
-        activeLayer={activeLayer} 
         books={books || undefined}
         authors={authors || undefined}
       />
