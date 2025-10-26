@@ -58,9 +58,18 @@ function App() {
 
   const handleNavigate = (section: 'hero' | 'books' | 'authors' | 'about') => {
     // Scroll to appropriate section (no need to manage activeLayer - ParallaxBackground handles it automatically)
-    const targetSection = document.querySelector(`.${section === 'hero' ? 'hero' : section === 'books' ? 'books-section' : 'authors-section'}`)
+    let targetSection: Element | null = null;
+    if (section === 'hero') {
+      targetSection = document.querySelector('.hero');
+    } else if (section === 'books') {
+      targetSection = document.querySelector('.books-section');
+    } else if (section === 'authors') {
+      targetSection = document.querySelector('.authors-section');
+    } else if (section === 'about') {
+      targetSection = document.getElementById('about');
+    }
     if (targetSection) {
-      targetSection.scrollIntoView({ behavior: 'smooth' })
+      targetSection.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
