@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import type { Book } from './types/api'
+import type { Book, Author } from './types/api'
 import { useBooks, useAuthors } from './hooks/useAPI'
 import { ParallaxBackground } from './components/ParallaxBackground'
 import { LoadingScreen } from './components/LoadingScreen'
 import { Hero } from './components/Hero'
 import { Navigation } from './components/Navigation'
 import { BooksSection } from './components/BooksSection'
+import { AuthorsSection } from './components/AuthorsSection'
 import { BookDetailModal } from './components/BookDetailModal'
 import { BookFormModal } from './components/BookFormModal'
 import './App.css'
@@ -17,10 +18,11 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [editingBook, setEditingBook] = useState<Book | null>(null)
+  const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null)
 
   // Fetch books and authors ONCE at app level - prevent duplicate API calls
   const { data: books, loading: booksLoading, error: booksError } = useBooks()
-  const { data: authors } = useAuthors() // Authors will be used later in Step 11
+  const { data: authors, loading: authorsLoading, error: authorsError } = useAuthors()
 
   const handleBrowseBooks = () => {
     setActiveLayer(2)
@@ -87,6 +89,17 @@ function App() {
     setEditingBook(null);
   }
 
+  const handleAuthorClick = (author: Author) => {
+    setSelectedAuthor(author);
+    // TODO: Open author detail modal in next step
+    console.log('Author clicked:', author);
+  }
+
+  const handleAddAuthor = () => {
+    // TODO: Open add author form in next step
+    console.log('Add author clicked');
+  }
+
   return (
     <>
       {isLoading && <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />}
@@ -132,43 +145,14 @@ function App() {
           editBook={editingBook}
         />
         
-        {/* Placeholder Authors section */}
-        <section 
-          className="authors-section"
-          style={{ 
-            minHeight: '100vh', 
-            padding: '4rem 2rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <div style={{ 
-            maxWidth: '800px', 
-            textAlign: 'center',
-            background: 'rgba(6, 20, 44, 0.8)',
-            padding: '3rem',
-            borderRadius: '1.6rem',
-            border: '1px solid var(--border-glow)'
-          }}>
-            <h2 style={{ 
-              color: 'var(--accent-purple)', 
-              fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(3.2rem, 5vw, 4.8rem)',
-              marginBottom: '2rem'
-            }}>
-              Authors Section
-            </h2>
-            <p style={{ 
-              color: 'var(--foreground)', 
-              fontSize: '1.8rem',
-              lineHeight: '1.6'
-            }}>
-              ✍️ Coming Soon: Discover our featured authors and their works.
-              This section will be implemented in Step 11.
-            </p>
-          </div>
-        </section>
+        {/* Authors Section */}
+        <AuthorsSection
+          authors={authors || undefined}
+          loading={authorsLoading}
+          error={authorsError}
+          onAuthorClick={handleAuthorClick}
+          onAddAuthor={handleAddAuthor}
+        />
       </main>
     </>
   )

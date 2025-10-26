@@ -1,0 +1,252 @@
+@use '../../styles/mixins' as *;
+
+.author-card {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 10, 0.9) 0%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  border: 2px solid rgba($accent-purple, 0.3);
+  border-radius: 2rem;
+  padding: 3rem;
+  cursor: pointer;
+  transition: all $timing-normal;
+  overflow: hidden;
+
+  // Gradient glow on hover
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(
+      135deg,
+      $accent-purple 0%,
+      $accent-pink 50%,
+      $accent-cyan 100%
+    );
+    border-radius: 2rem;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity $timing-normal;
+  }
+
+  &:hover {
+    border-color: transparent;
+    box-shadow: 
+      0 0 40px rgba($accent-purple, 0.4),
+      0 0 20px rgba($accent-pink, 0.2);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .author-card__hover-indicator {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .author-card__avatar {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba($accent-purple, 0.5);
+    }
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 2.4rem;
+    border-radius: 1.6rem;
+  }
+
+  // ============================================
+  // AVATAR
+  // ============================================
+
+  &__avatar {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    position: relative;
+    transition: all $timing-normal;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: inherit;
+      filter: blur(10px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+  }
+
+  &__initials {
+    font-size: 3.6rem;
+    font-family: $font-heading;
+    font-weight: 900;
+    color: $foreground;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  // ============================================
+  // CONTENT
+  // ============================================
+
+  &__content {
+    text-align: center;
+  }
+
+  &__name {
+    font-size: 2.4rem;
+    font-family: $font-heading;
+    font-weight: 800;
+    color: $foreground;
+    margin: 0 0 1.6rem 0;
+    line-height: 1.3;
+    word-wrap: break-word;
+  }
+
+  // ============================================
+  // STATS
+  // ============================================
+
+  &__stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  &__stat {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    background: rgba($accent-purple, 0.1);
+    border: 1px solid rgba($accent-purple, 0.3);
+    border-radius: 5rem;
+  }
+
+  &__stat-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  &__stat-value {
+    font-size: 2rem;
+    font-family: $font-mono;
+    font-weight: 700;
+    color: $accent-purple;
+  }
+
+  &__stat-label {
+    font-size: 1.4rem;
+    color: $muted-text;
+    text-transform: lowercase;
+  }
+
+  // ============================================
+  // RECENT BOOKS
+  // ============================================
+
+  &__books {
+    text-align: left;
+    padding-top: 2rem;
+    border-top: 1px solid rgba($accent-purple, 0.2);
+  }
+
+  &__books-title {
+    font-size: 1.2rem;
+    font-family: $font-mono;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $muted-text;
+    margin: 0 0 1.2rem 0;
+  }
+
+  &__books-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__book-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    font-size: 1.4rem;
+    line-height: 1.5;
+
+    &::before {
+      content: '•';
+      color: $accent-purple;
+      font-weight: 900;
+    }
+  }
+
+  &__book-title {
+    color: $foreground;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__book-year {
+    color: $muted-text;
+    font-family: $font-mono;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  // ============================================
+  // HOVER INDICATOR
+  // ============================================
+
+  &__hover-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.6rem;
+    background: linear-gradient(
+      to top,
+      rgba($accent-purple, 0.3) 0%,
+      transparent 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: $font-heading;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: $foreground;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all $timing-normal;
+  }
+
+  &__arrow {
+    font-size: 2rem;
+    transition: transform $timing-fast;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(5px);
+  }
+}
