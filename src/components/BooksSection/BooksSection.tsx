@@ -1,8 +1,3 @@
-// ============================================
-// BOOKS SECTION COMPONENT
-// Grid display of all books with search/filter
-// ============================================
-
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BookCard } from '../BookCard';
@@ -13,52 +8,50 @@ import './BooksSection.scss';
 interface BooksSectionProps {
   onBookClick?: (book: Book) => void;
   onAddBookClick?: () => void;
-  books?: Book[]; // Accept books data from parent
-  loading?: boolean; // Accept loading state from parent
-  error?: APIError | null; // Accept error state from parent
+  books?: Book[];
+  loading?: boolean;
+  error?: APIError | null;
 }
 
-function BooksSection({ onBookClick, onAddBookClick, books, loading, error }: BooksSectionProps) {
+type BookSort = 'title' | 'year' | 'added';
+
+function BooksSection({ onBookClick, onAddBookClick, books = [], loading = false, error = null }: BooksSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<BookSort>('title');
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Filter books based on debounced search term
-  const filteredBooks = useMemo(() => {
-    if (!books) return [];
-    if (!debouncedSearchTerm) return books;
-
-    const term = debouncedSearchTerm.toLowerCase();
-    return books.filter(
-      (book) =>
+  // Filter and sort books with debounced search
+  const sortedBooks = useMemo(() => {
+    // Filter books by debounced search term
+    const filtered = books.filter((book) => {
+      if (!debouncedSearchTerm) return true;
+      const term = debouncedSearchTerm.toLowerCase();
+      return (
         book.title.toLowerCase().includes(term) ||
         book.isbn?.toLowerCase().includes(term) ||
         book.author?.name.toLowerCase().includes(term)
-    );
-  }, [books, debouncedSearchTerm]);
+      );
+    });
+
+    // Sort books
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'title') {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === 'year') {
+        return (b.year || 0) - (a.year || 0);
+      } else {
+        // sort by added (book id)
+        return (b.id || 0) - (a.id || 0);
+      }
+    });
+  }, [books, debouncedSearchTerm, sortBy]);
 
   const renderContent = () => {
     if (loading) {
       return (
         <div className="books-section__loading">
-          <div className="books-section__cold-start">
-            <div className="books-section__spinner" />
-            <h3>Waking up the library server...</h3>
-            <p className="books-section__cold-start-message">
-              🌐 The API is hosted on Render's free tier. First request may take 30-60 seconds.
-            </p>
-          </div>
-          <div className="books-section__grid">
-            {[...Array(6)].map((_, index) => (
-              <div key={index} className="skeleton-card" aria-hidden="true">
-                <div className="skeleton-card__cover" />
-                <div className="skeleton-card__content">
-                  <div className="skeleton-card__title" />
-                  <div className="skeleton-card__author" />
-                  <div className="skeleton-card__isbn" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <div className="books-section__spinner" />
+          <p>Loading books...</p>
         </div>
       );
     }
@@ -66,68 +59,60 @@ function BooksSection({ onBookClick, onAddBookClick, books, loading, error }: Bo
     if (error) {
       return (
         <div className="books-section__error">
-          <span className="books-section__error-icon">⚠️</span>
-          <h3 className="books-section__error-title">
-            Oops! Couldn't connect to the library
-          </h3>
-          <p className="books-section__error-message">
-            {error.message || 'Please try again later.'}
-          </p>
-          <button 
-            className="books-section__retry-btn"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </button>
+          <div className="books-section__error-icon">⚠️</div>
+          <h3>Failed to Load Books</h3>
+          <p>{error.message || 'An error occurred while fetching books.'}</p>
         </div>
       );
     }
 
-    if (filteredBooks.length === 0 && searchTerm) {
+    if (books.length === 0) {
       return (
         <div className="books-section__empty">
-          <span className="books-section__empty-icon">🔍</span>
-          <h3 className="books-section__empty-title">
-            No matches found
-          </h3>
-          <p className="books-section__empty-message">
-            Try a different search term or clear the filter
-          </p>
-          <button
-            className="books-section__clear-btn"
-            onClick={() => setSearchTerm('')}
-          >
-            Clear Search
-          </button>
+          <div className="books-section__empty-icon">📚</div>
+          <h3>No Books Yet</h3>
+          <p>Be the first to add a book to the library!</p>
+          {onAddBookClick && (
+            <button className="books-section__add-btn" onClick={onAddBookClick}>
+              <span className="books-section__add-icon">+</span>
+              Add First Book
+            </button>
+          )}
         </div>
       );
     }
 
-    if (filteredBooks.length === 0) {
+    if (sortedBooks.length === 0) {
       return (
         <div className="books-section__empty">
-          <span className="books-section__empty-icon">📚</span>
-          <h3 className="books-section__empty-title">
-            Your library is waiting to be filled
-          </h3>
-          <p className="books-section__empty-message">
-            Add your first book to get started!
-          </p>
+          <div className="books-section__empty-icon">🔍</div>
+          <h3>No Books Found</h3>
+          <p>Try a different search term.</p>
         </div>
       );
     }
 
     return (
-      <div className="books-section__grid">
-        {filteredBooks.map((book, index) => (
+      <motion.div
+        className="books-section__grid"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.08,
+            },
+          },
+        }}
+      >
+        {sortedBooks.map((book) => (
           <BookCard
             key={book.id}
             book={book}
             onCardClick={onBookClick}
-            index={index}
           />
         ))}
-      </div>
+      </motion.div>
     );
   };
 
@@ -137,43 +122,35 @@ function BooksSection({ onBookClick, onAddBookClick, books, loading, error }: Bo
         {/* Section Header */}
         <motion.div
           className="books-section__header"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          <div className="books-section__title-wrapper">
-            <span className="books-section__eyebrow">Book Collection</span>
-            <h2 className="books-section__title">Browse Books</h2>
-          </div>
-
-          <button
-            className="books-section__add-btn"
-            onClick={onAddBookClick}
-            aria-label="Add new book"
-          >
-            <span className="books-section__add-icon">+</span>
-            <span className="books-section__add-text">Add Book</span>
-          </button>
+          <span className="books-section__eyebrow">Book Collection</span>
+          <h2 className="books-section__title">Browse Books</h2>
+          <p className="books-section__subtitle">
+            Search, sort, and curate your personal reading catalogue.
+          </p>
         </motion.div>
 
-        {/* Search Bar */}
+        {/* Controls */}
         <motion.div
-          className="books-section__search"
+          className="books-section__controls"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <div className="books-section__search-wrapper">
+          {/* Search Bar */}
+          <div className="books-section__search">
             <span className="books-section__search-icon">🔍</span>
             <input
               type="text"
-              className="books-section__search-input"
               placeholder="Search by title, author, or ISBN..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search books"
+              className="books-section__search-input"
             />
             {searchTerm && (
               <button
@@ -181,19 +158,49 @@ function BooksSection({ onBookClick, onAddBookClick, books, loading, error }: Bo
                 onClick={() => setSearchTerm('')}
                 aria-label="Clear search"
               >
-                ×
+                ✕
               </button>
             )}
           </div>
 
-          {books && books.length > 0 && (
-            <p className="books-section__results-count">
-              Showing {filteredBooks.length} of {books.length} books
-            </p>
+          {/* Sort Dropdown */}
+          <div className="books-section__sort">
+            <label htmlFor="sort-books">Sort by:</label>
+            <select
+              id="sort-books"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as BookSort)}
+              className="books-section__sort-select"
+            >
+              <option value="title">Title (A-Z)</option>
+              <option value="year">Publication Year</option>
+              <option value="added">Recently Added</option>
+            </select>
+          </div>
+
+          {/* Add Book Button */}
+          {onAddBookClick && (
+            <button className="books-section__add-btn" onClick={onAddBookClick}>
+              <span className="books-section__add-icon">+</span>
+              Add Book
+            </button>
           )}
         </motion.div>
 
-        {/* Books Grid / Loading / Error / Empty States */}
+        {/* Results Count */}
+        {!loading && !error && books.length > 0 && (
+          <motion.div
+            className="books-section__results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            Showing {sortedBooks.length} of {books.length} book
+            {books.length !== 1 ? 's' : ''}
+          </motion.div>
+        )}
+
+        {/* Content */}
         {renderContent()}
       </div>
     </section>
