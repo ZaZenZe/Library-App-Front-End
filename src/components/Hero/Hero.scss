@@ -258,28 +258,32 @@
 
 .hero__scroll-indicator {
   @include flex-column-center;
-  gap: $spacing-md;
-  margin-top: $spacing-3xl;
+  gap: $spacing-lg;
+  margin-top: $spacing-2xl;
   cursor: pointer;
-  opacity: 0.8;
-  transition: opacity 0.3s $ease-smooth;
+  opacity: 1 !important;
+  position: relative;
+  z-index: 10;
+  transition: opacity 0.3s $ease-smooth, transform 0.3s $ease-smooth;
   
   &:hover {
-    opacity: 1;
+    opacity: 1 !important;
+    transform: translateY(-5px);
   }
   
   @include mobile {
-    margin-top: $spacing-2xl;
+    margin-top: $spacing-xl;
   }
 }
 
 .hero__scroll-loop {
-  width: 200px;
+  width: 350px;
   overflow: hidden;
   position: relative;
+  padding: $spacing-sm 0;
   
   @include mobile {
-    width: 150px;
+    width: 280px;
   }
 }
 
@@ -287,11 +291,28 @@
   display: inline-block;
   white-space: nowrap;
   font-family: $font-mono;
-  font-size: 1.2rem;
+  font-size: clamp(1.2rem, 1.5vw, 1.4rem);
   font-weight: $font-weight-medium;
-  color: $accent-pink;
+  color: $accent-pink !important;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  opacity: 1 !important;
+  visibility: visible !important;
+  will-change: transform;
+  animation: scrollHorizontal 25s linear infinite;
+  
+  @include mobile {
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes scrollHorizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
 }
 
 .hero__scroll-arrow {

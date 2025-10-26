@@ -34,20 +34,6 @@ function App() {
   const { data: books, loading: booksLoading, error: booksError } = useBooks()
   const { data: authors, loading: authorsLoading, error: authorsError } = useAuthors()
 
-  const handleBrowseBooks = () => {
-    const booksSection = document.querySelector('.books-section')
-    if (booksSection) {
-      booksSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
-  const handleExploreAuthors = () => {
-    const authorsSection = document.querySelector('.authors-section')
-    if (authorsSection) {
-      authorsSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
   const handleNavigate = (section: 'hero' | 'books' | 'authors' | 'about') => {
     // Scroll to appropriate section (no need to manage activeLayer - ParallaxBackground handles it automatically)
     const targetSection = document.querySelector(`.${section === 'hero' ? 'hero' : section === 'books' ? 'books-section' : 'authors-section'}`)
@@ -153,10 +139,7 @@ function App() {
       />
       
       <main style={{ position: 'relative', zIndex: 10 }}>
-        <Hero 
-          onBrowseBooksClick={handleBrowseBooks}
-          onExploreAuthorsClick={handleExploreAuthors}
-        />
+        <Hero />
         
         {/* Books Section - Pass data from parent to avoid duplicate API calls */}
         <BooksSection 
