@@ -79,13 +79,16 @@ function BookCard({ book, onCardClick, index = 0 }: BookCardProps) {
           </div>
         )}
 
-        {book.publicationYear && (
-          <div className="book-card__meta">
-            <span className="book-card__year">
-              {book.publicationYear}
+        <div className="book-card__meta">
+          <span className="book-card__year">
+            {book.year}
+          </span>
+          {book.publisher && (
+            <span className="book-card__publisher">
+              {book.publisher.name}
             </span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Hover Indicator */}

@@ -183,17 +183,19 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
 
               <div className="book-detail-modal__meta-item">
                 <span className="book-detail-modal__meta-label">Publication Year</span>
-                <span className="book-detail-modal__meta-value">{book.publicationYear}</span>
+                <span className="book-detail-modal__meta-value">{book.year}</span>
               </div>
+
+              {book.publisher && (
+                <div className="book-detail-modal__meta-item">
+                  <span className="book-detail-modal__meta-label">Publisher</span>
+                  <span className="book-detail-modal__meta-value">{book.publisher.name}</span>
+                </div>
+              )}
 
               <div className="book-detail-modal__meta-item">
                 <span className="book-detail-modal__meta-label">Book ID</span>
                 <span className="book-detail-modal__meta-value">#{book.id}</span>
-              </div>
-
-              <div className="book-detail-modal__meta-item">
-                <span className="book-detail-modal__meta-label">Author ID</span>
-                <span className="book-detail-modal__meta-value">#{book.authorId}</span>
               </div>
             </motion.div>
 

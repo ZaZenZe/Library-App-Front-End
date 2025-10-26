@@ -5,18 +5,19 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useBooks } from '../../hooks/useAPI';
 import { BookCard } from '../BookCard';
-import type { Book } from '../../types/api';
+import type { Book, APIError } from '../../types/api';
 import './BooksSection.scss';
 
 interface BooksSectionProps {
   onBookClick?: (book: Book) => void;
   onAddBookClick?: () => void;
+  books?: Book[]; // Accept books data from parent
+  loading?: boolean; // Accept loading state from parent
+  error?: APIError | null; // Accept error state from parent
 }
 
-function BooksSection({ onBookClick, onAddBookClick }: BooksSectionProps) {
-  const { data: books, loading, error } = useBooks();
+function BooksSection({ onBookClick, onAddBookClick, books, loading, error }: BooksSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filter books based on search term
@@ -36,17 +37,26 @@ function BooksSection({ onBookClick, onAddBookClick }: BooksSectionProps) {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="books-section__grid">
-          {[...Array(6)].map((_, index) => (
-            <div key={index} className="skeleton-card" aria-hidden="true">
-              <div className="skeleton-card__cover" />
-              <div className="skeleton-card__content">
-                <div className="skeleton-card__title" />
-                <div className="skeleton-card__author" />
-                <div className="skeleton-card__isbn" />
+        <div className="books-section__loading">
+          <div className="books-section__cold-start">
+            <div className="books-section__spinner" />
+            <h3>Waking up the library server...</h3>
+            <p className="books-section__cold-start-message">
+              🌐 The API is hosted on Render's free tier. First request may take 30-60 seconds.
+            </p>
+          </div>
+          <div className="books-section__grid">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="skeleton-card" aria-hidden="true">
+                <div className="skeleton-card__cover" />
+                <div className="skeleton-card__content">
+                  <div className="skeleton-card__title" />
+                  <div className="skeleton-card__author" />
+                  <div className="skeleton-card__isbn" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       );
     }

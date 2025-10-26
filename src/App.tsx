@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import type { Book } from './types/api'
+import { useBooks, useAuthors } from './hooks/useAPI'
 import { ParallaxBackground } from './components/ParallaxBackground'
 import { LoadingScreen } from './components/LoadingScreen'
 import { Hero } from './components/Hero'
 import { Navigation } from './components/Navigation'
 import { BooksSection } from './components/BooksSection'
 import { BookDetailModal } from './components/BookDetailModal'
+import { BookFormModal } from './components/BookFormModal'
 import './App.css'
 
 function App() {
@@ -13,6 +15,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedBookId, setSelectedBookId] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false)
+  const [editingBook, setEditingBook] = useState<Book | null>(null)
+
+  // Fetch books and authors ONCE at app level - prevent duplicate API calls
+  const { data: books, loading: booksLoading, error: booksError } = useBooks()
+  const { data: authors } = useAuthors() // Authors will be used later in Step 11
 
   const handleBrowseBooks = () => {
     setActiveLayer(2)
@@ -57,9 +65,26 @@ function App() {
   }
 
   const handleEditBook = (book: Book) => {
-    // TODO: Open edit form modal (Step 10)
-    console.log('Edit book:', book)
-    setIsModalOpen(false)
+    // Open edit form with book data
+    setEditingBook(book);
+    setIsFormModalOpen(true);
+    setIsModalOpen(false);
+  }
+
+  const handleAddBook = () => {
+    setEditingBook(null);
+    setIsFormModalOpen(true);
+  }
+
+  const handleFormSuccess = () => {
+    // Refresh books list - BooksSection will refetch automatically
+    setIsFormModalOpen(false);
+    setEditingBook(null);
+  }
+
+  const handleCloseForm = () => {
+    setIsFormModalOpen(false);
+    setEditingBook(null);
   }
 
   return (
@@ -68,7 +93,12 @@ function App() {
       
       <Navigation onNavigate={handleNavigate} />
       
-      <ParallaxBackground activeLayer={activeLayer} />
+      {/* Pass books and authors data to ParallaxBackground to prevent duplicate API calls */}
+      <ParallaxBackground 
+        activeLayer={activeLayer} 
+        books={books || undefined}
+        authors={authors || undefined}
+      />
       
       <main style={{ position: 'relative', zIndex: 10 }}>
         <Hero 
@@ -76,10 +106,13 @@ function App() {
           onExploreAuthorsClick={handleExploreAuthors}
         />
         
-        {/* Books Section */}
+        {/* Books Section - Pass data from parent to avoid duplicate API calls */}
         <BooksSection 
           onBookClick={handleBookClick}
-          onAddBookClick={() => console.log('Add book clicked')}
+          onAddBookClick={handleAddBook}
+          books={books || undefined}
+          loading={booksLoading}
+          error={booksError}
         />
         
         {/* Book Detail Modal */}
@@ -89,6 +122,14 @@ function App() {
           onClose={handleCloseModal}
           onEdit={handleEditBook}
           onDeleted={handleBookDeleted}
+        />
+
+        {/* Book Form Modal (Add/Edit) */}
+        <BookFormModal
+          isOpen={isFormModalOpen}
+          onClose={handleCloseForm}
+          onSuccess={handleFormSuccess}
+          editBook={editingBook}
         />
         
         {/* Placeholder Authors section */}

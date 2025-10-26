@@ -23,20 +23,28 @@
 .parallax-background__layer {
   @include absolute-cover;
   opacity: 0;
-  transition: opacity 1s $ease-smooth;
+  transition: opacity 1.2s $ease-smooth;
   width: 110%;
   height: 120vh;
   top: -10vh;
   left: -5%;
-  @include hardware-accelerate;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform: translate3d(0, 0, 0); // Force hardware acceleration
   
   &.active {
     opacity: 1;
   }
   
   @include reduced-motion {
-    transition: opacity 0.3s;
+    transition: opacity 0.5s;
     transform: none !important;
+    animation: none !important;
+    
+    * {
+      animation: none !important;
+    }
   }
 }
 
@@ -321,6 +329,138 @@
 }
 
 // ============================================
+// SCROLLING TEXT ANIMATIONS (Layer 2 & 3)
+// ============================================
+
+.parallax-background__scrolling-text {
+  position: absolute;
+  white-space: nowrap;
+  display: flex;
+  gap: 4rem;
+  font-family: $font-heading;
+  font-weight: 700;
+  letter-spacing: 0.5rem;
+  overflow: hidden;
+  
+  span {
+    display: inline-block;
+    padding: 0 2rem;
+    color: $accent-teal;
+    opacity: 0.08;
+    font-size: clamp(2rem, 3vw, 4rem);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+}
+
+// Diagonal scrolling for books (Layer 2)
+.parallax-background__scrolling-text--diagonal-1 {
+  top: 10%;
+  left: -50%;
+  width: 200%;
+  transform: rotate(-25deg);
+  animation: scrollDiagonal1 60s linear infinite;
+  
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.parallax-background__scrolling-text--diagonal-2 {
+  top: 60%;
+  left: -50%;
+  width: 200%;
+  transform: rotate(25deg);
+  animation: scrollDiagonal2 80s linear infinite;
+  
+  span {
+    opacity: 0.05;
+  }
+  
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+// Horizontal scrolling for authors (Layer 3)
+.parallax-background__scrolling-text--horizontal-1 {
+  top: 20%;
+  left: -50%;
+  width: 200%;
+  animation: scrollHorizontal 70s linear infinite;
+  
+  span {
+    opacity: 0.1;
+    font-size: clamp(3rem, 4vw, 5rem);
+  }
+  
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+// Vertical scrolling for authors (Layer 3)
+.parallax-background__scrolling-text--vertical-1 {
+  top: -50%;
+  left: 70%;
+  height: 200vh;
+  width: auto;
+  flex-direction: column;
+  animation: scrollVertical 90s linear infinite;
+  
+  span {
+    opacity: 0.06;
+    font-size: clamp(2rem, 2.5vw, 3.5rem);
+    transform: rotate(90deg);
+    padding: 3rem 2rem;
+  }
+  
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+// ============================================
+// SCROLLING ANIMATIONS
+// ============================================
+
+@keyframes scrollDiagonal1 {
+  0% {
+    transform: rotate(-25deg) translateX(0);
+  }
+  100% {
+    transform: rotate(-25deg) translateX(-50%);
+  }
+}
+
+@keyframes scrollDiagonal2 {
+  0% {
+    transform: rotate(25deg) translateX(0);
+  }
+  100% {
+    transform: rotate(25deg) translateX(50%);
+  }
+}
+
+@keyframes scrollHorizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollVertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(50%);
+  }
+}
+
+// ============================================
 // RESPONSIVE ADJUSTMENTS
 // ============================================
 
@@ -336,8 +476,7 @@
     font-size: clamp(3rem, 6vw, 5rem);
   }
   
-  .parallax-background__floating-terms--2 span,
-  .parallax-background__keywords span {
+  .parallax-background__floating-terms--2 span {
     font-size: clamp(1.2rem, 2vw, 2rem);
   }
   
@@ -346,8 +485,16 @@
     max-width: 30ch;
   }
   
-  .parallax-background__letters span {
-    font-size: clamp(4rem, 8vw, 8rem);
+  // Simplify scrolling text on mobile
+  .parallax-background__scrolling-text {
+    display: none; // Hide on mobile for performance
+  }
+}
+
+@include tablet {
+  .parallax-background__scrolling-text span {
+    font-size: clamp(1.6rem, 2vw, 2.4rem);
+    gap: 2rem;
   }
 }
 

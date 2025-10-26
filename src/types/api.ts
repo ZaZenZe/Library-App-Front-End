@@ -1,53 +1,125 @@
 // ============================================
-// API TYPE DEFINITIONS
+// API TYPE DEFINITIONS (Backend Response Types)
 // ============================================
 
-export interface Book {
+/**
+ * Publisher as returned by API (nested in Book)
+ */
+export interface Publisher {
   id: number;
-  title: string;
-  authorId: number;
-  isbn: string;
-  publicationYear: number;
-  genre: string;
-  author?: Author; // Optional populated field
+  name: string;
 }
 
+/**
+ * Author as returned by API
+ * IMPORTANT: When fetching from /authors, includes books array
+ * When nested in Book response, books array may cause circular references
+ */
 export interface Author {
   id: number;
   name: string;
-  bio?: string;
-  birthYear?: number;
+  books?: Book[]; // Present in GET /authors, avoid displaying full nested books
 }
+
+/**
+ * Book as returned by API
+ * IMPORTANT: Always includes nested author object
+ * May include nested publisher object (can be null)
+ */
+export interface Book {
+  id: number;
+  title: string;
+  isbn: string;
+  year: number; // API uses 'year', not 'publicationYear'
+  authorId: number; // Internal FK - don't display to users
+  publisherId?: number | null; // Internal FK - don't display to users
+  author: Author; // ALWAYS present in API response
+  publisher?: Publisher | null; // May be null
+}
+
+// ============================================
+// DTO TYPES (for API requests)
+// ============================================
 
 export interface CreateBookDTO {
   title: string;
   authorId: number;
   isbn: string;
-  publicationYear: number;
-  genre: string;
+  year: number; // Match API field name
+  genre?: string; // Optional in some endpoints
 }
 
 export interface UpdateBookDTO {
-  id: number;
   title: string;
   authorId: number;
   isbn: string;
-  publicationYear: number;
-  genre: string;
+  year: number; // Match API field name
+  genre?: string;
 }
 
 export interface CreateAuthorDTO {
   name: string;
   bio?: string;
-  birthYear?: number;
 }
 
 export interface UpdateAuthorDTO {
-  id: number;
   name: string;
   bio?: string;
-  birthYear?: number;
 }
+
+// ============================================
+// DISPLAY TYPES (Frontend-only, transformed data)
+// ============================================
+
+/**
+ * Simplified book data for display in cards/lists
+ * Transforms nested API response to flat structure
+ */
+export interface BookDisplay {
+  id: number;
+  title: string;
+  isbn: string;
+  year: number;
+  authorName: string; // Extracted from book.author.name
+  publisherName: string | null; // Extracted from book.publisher?.name
+}
+
+/**
+ * Simplified author data for display in cards/lists
+ * Avoids circular reference issues
+ */
+export interface AuthorDisplay {
+  id: number;
+  name: string;
+  bookCount: number; // Derived from author.books.length
+  recentBooks: string[]; // Just titles, first 3
+}
+
+// ============================================
+// UTILITY TRANSFORM FUNCTIONS
+// ============================================
+
+/**
+ * Transform API Book to display-friendly format
+ */
+export const transformBook = (book: Book): BookDisplay => ({
+  id: book.id,
+  title: book.title,
+  isbn: book.isbn,
+  year: book.year,
+  authorName: book.author?.name || 'Unknown Author',
+  publisherName: book.publisher?.name || null,
+});
+
+/**
+ * Transform API Author to display-friendly format
+ */
+export const transformAuthor = (author: Author): AuthorDisplay => ({
+  id: author.id,
+  name: author.name,
+  bookCount: author.books?.length || 0,
+  recentBooks: author.books?.slice(0, 3).map(b => b.title) || [],
+});
 
 export interface APIError {
   message: string;

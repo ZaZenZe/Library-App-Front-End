@@ -80,10 +80,48 @@ export function useAPI<T>(
 // ============================================
 
 /**
- * Fetch all books
+ * Fetch all books - with stable reference to prevent infinite loops
  */
 export function useBooks() {
-  return useAPI(() => booksAPI.getAll());
+  const [data, setData] = useState<Book[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<APIError | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchBooks = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const result = await booksAPI.getAll();
+        if (isMounted) {
+          setData(result);
+        }
+      } catch (err) {
+        if (isMounted) {
+          const errorMessage = getErrorMessage(err);
+          setError({
+            message: errorMessage,
+            status: getErrorStatus(err),
+          });
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchBooks();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array - only fetch once on mount
+
+  return { data, loading, error };
 }
 
 /**
@@ -221,10 +259,48 @@ export function useImportBook() {
 // ============================================
 
 /**
- * Fetch all authors
+ * Fetch all authors - with stable reference to prevent infinite loops
  */
 export function useAuthors() {
-  return useAPI(() => authorsAPI.getAll());
+  const [data, setData] = useState<Author[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<APIError | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchAuthors = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const result = await authorsAPI.getAll();
+        if (isMounted) {
+          setData(result);
+        }
+      } catch (err) {
+        if (isMounted) {
+          const errorMessage = getErrorMessage(err);
+          setError({
+            message: errorMessage,
+            status: getErrorStatus(err),
+          });
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchAuthors();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array - only fetch once on mount
+
+  return { data, loading, error };
 }
 
 /**
@@ -329,11 +405,11 @@ export function useDeleteAuthor() {
  * Get books by author ID
  */
 export function useBooksByAuthor(authorId: number) {
-  const { data: allBooks, loading, error, execute } = useBooks();
+  const { data: allBooks, loading, error } = useBooks();
   
   const booksByAuthor = allBooks?.filter(book => book.authorId === authorId) || [];
   
-  return { books: booksByAuthor, loading, error, execute };
+  return { books: booksByAuthor, loading, error };
 }
 
 /**
@@ -356,7 +432,7 @@ export function useBookSearch(searchTerm: string, delay = 300) {
       const filtered = allBooks.filter(book => 
         book.title.toLowerCase().includes(term) ||
         book.isbn.toLowerCase().includes(term) ||
-        book.genre.toLowerCase().includes(term)
+        book.author?.name.toLowerCase().includes(term)
       );
       
       setFilteredBooks(filtered);

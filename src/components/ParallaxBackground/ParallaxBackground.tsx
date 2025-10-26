@@ -2,39 +2,66 @@
 // PARALLAX BACKGROUND COMPONENT
 // ============================================
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMouseParallax } from '../../hooks/useMouseParallax';
+import type { Book, Author } from '../../types/api';
 import './ParallaxBackground.scss';
 
 interface ParallaxBackgroundProps {
   activeLayer?: 1 | 2 | 3; // Which layer is currently active
+  books?: Book[]; // Pass books data from parent to avoid duplicate API calls
+  authors?: Author[]; // Pass authors data from parent to avoid duplicate API calls
 }
 
-export function ParallaxBackground({ activeLayer = 1 }: ParallaxBackgroundProps) {
+export function ParallaxBackground({ activeLayer = 1, books, authors }: ParallaxBackgroundProps) {
   const layer1Ref = useRef<HTMLDivElement>(null);
   const layer2Ref = useRef<HTMLDivElement>(null);
   const layer3Ref = useRef<HTMLDivElement>(null);
   
+  // Create repeated book/author names for scrolling effect
+  const [bookNames, setBookNames] = useState<string[]>([]);
+  const [authorNames, setAuthorNames] = useState<string[]>([]);
+  
+  useEffect(() => {
+    if (books && books.length > 0) {
+      // Repeat book titles to fill the screen
+      const titles = books.map(book => book.title);
+      const repeated = Array(10).fill(titles).flat();
+      setBookNames(repeated);
+    }
+  }, [books]);
+  
+  useEffect(() => {
+    if (authors && authors.length > 0) {
+      // Repeat author names to fill the screen
+      const names = authors.map(author => author.name);
+      const repeated = Array(10).fill(names).flat();
+      setAuthorNames(repeated);
+    }
+  }, [authors]);
+  
   // Mouse parallax effect (disabled on mobile)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
   const offset = useMouseParallax({ 
-    maxOffset: 30, 
-    smoothing: 0.1,
+    maxOffset: 20, // Reduced for smoother performance
+    smoothing: 0.15,
     disabled: isMobile 
   });
 
-  // Apply parallax transforms to layers
+  // Apply parallax transforms to layers with reduced intensity
   useEffect(() => {
-    if (layer1Ref.current) {
-      layer1Ref.current.style.transform = `translate(${offset.x * 0.5}px, ${offset.y * 0.5}px)`;
+    if (!isMobile) {
+      if (layer1Ref.current) {
+        layer1Ref.current.style.transform = `translate3d(${offset.x * 0.3}px, ${offset.y * 0.3}px, 0)`;
+      }
+      if (layer2Ref.current) {
+        layer2Ref.current.style.transform = `translate3d(${offset.x * 0.6}px, ${offset.y * 0.6}px, 0)`;
+      }
+      if (layer3Ref.current) {
+        layer3Ref.current.style.transform = `translate3d(${offset.x * 0.9}px, ${offset.y * 0.9}px, 0)`;
+      }
     }
-    if (layer2Ref.current) {
-      layer2Ref.current.style.transform = `translate(${offset.x * 1}px, ${offset.y * 1}px)`;
-    }
-    if (layer3Ref.current) {
-      layer3Ref.current.style.transform = `translate(${offset.x * 1.5}px, ${offset.y * 1.5}px)`;
-    }
-  }, [offset]);
+  }, [offset, isMobile]);
 
   return (
     <div className="parallax-background" role="presentation" aria-hidden="true">
@@ -57,7 +84,7 @@ export function ParallaxBackground({ activeLayer = 1 }: ParallaxBackgroundProps)
           <rect width="100%" height="100%" fill="url(#diagonal-lines)" />
         </svg>
 
-        {/* Floating Text Elements */}
+        {/* Floating Text Elements - Static for Hero */}
         <div className="parallax-background__floating-terms parallax-background__floating-terms--1">
           <span>LIBRARY</span>
           <span>BOOKS</span>
@@ -69,11 +96,52 @@ export function ParallaxBackground({ activeLayer = 1 }: ParallaxBackgroundProps)
         </div>
       </div>
 
-      {/* Layer 2 - Browse Books Section Background */}
+      {/* Layer 2 - Browse Books Section Background - DYNAMIC SCROLLING BOOK NAMES */}
       <div 
         ref={layer2Ref}
         className={`parallax-background__layer parallax-background__layer--2 ${activeLayer === 2 ? 'active' : ''}`}
       >
+        {/* Diagonal Scrolling Book Names */}
+        <div className="parallax-background__scrolling-text parallax-background__scrolling-text--diagonal-1">
+          {bookNames.length > 0 ? (
+            bookNames.map((title, index) => (
+              <span key={`book-diag1-${index}`}>{title}</span>
+            ))
+          ) : (
+            // Fallback if no books loaded yet
+            <>
+              <span>The Great Gatsby</span>
+              <span>1984</span>
+              <span>To Kill a Mockingbird</span>
+              <span>Pride and Prejudice</span>
+              <span>The Catcher in the Rye</span>
+              <span>Harry Potter</span>
+              <span>Lord of the Rings</span>
+              <span>The Hobbit</span>
+            </>
+          )}
+        </div>
+
+        {/* Second diagonal layer for depth */}
+        <div className="parallax-background__scrolling-text parallax-background__scrolling-text--diagonal-2">
+          {bookNames.length > 0 ? (
+            bookNames.slice().reverse().map((title, index) => (
+              <span key={`book-diag2-${index}`}>{title}</span>
+            ))
+          ) : (
+            <>
+              <span>Brave New World</span>
+              <span>Animal Farm</span>
+              <span>The Odyssey</span>
+              <span>Moby Dick</span>
+              <span>War and Peace</span>
+              <span>The Divine Comedy</span>
+              <span>Hamlet</span>
+              <span>Fahrenheit 451</span>
+            </>
+          )}
+        </div>
+
         {/* Dewey Decimal Numbers */}
         <div className="parallax-background__floating-terms parallax-background__floating-terms--2">
           <span>001.432</span>
@@ -84,60 +152,60 @@ export function ParallaxBackground({ activeLayer = 1 }: ParallaxBackgroundProps)
           <span>200.1</span>
           <span>398.2</span>
           <span>978.1</span>
-          <span>641.5</span>
-          <span>808.02</span>
-        </div>
-
-        {/* Book-related Keywords */}
-        <div className="parallax-background__keywords">
-          <span>Fiction</span>
-          <span>Non-Fiction</span>
-          <span>Biography</span>
-          <span>Mystery</span>
-          <span>Romance</span>
-          <span>Sci-Fi</span>
-          <span>Fantasy</span>
-          <span>Thriller</span>
-          <span>History</span>
-          <span>Poetry</span>
         </div>
       </div>
 
-      {/* Layer 3 - Authors Section Background */}
+      {/* Layer 3 - Authors Section Background - DYNAMIC SCROLLING AUTHOR NAMES */}
       <div 
         ref={layer3Ref}
         className={`parallax-background__layer parallax-background__layer--3 ${activeLayer === 3 ? 'active' : ''}`}
       >
+        {/* Horizontal Scrolling Author Names */}
+        <div className="parallax-background__scrolling-text parallax-background__scrolling-text--horizontal-1">
+          {authorNames.length > 0 ? (
+            authorNames.map((name, index) => (
+              <span key={`author-h1-${index}`}>{name}</span>
+            ))
+          ) : (
+            <>
+              <span>William Shakespeare</span>
+              <span>Jane Austen</span>
+              <span>Charles Dickens</span>
+              <span>Ernest Hemingway</span>
+              <span>Virginia Woolf</span>
+              <span>James Joyce</span>
+              <span>F. Scott Fitzgerald</span>
+              <span>Gabriel García Márquez</span>
+            </>
+          )}
+        </div>
+
+        {/* Vertical Scrolling Author Names */}
+        <div className="parallax-background__scrolling-text parallax-background__scrolling-text--vertical-1">
+          {authorNames.length > 0 ? (
+            authorNames.slice().reverse().map((name, index) => (
+              <span key={`author-v1-${index}`}>{name}</span>
+            ))
+          ) : (
+            <>
+              <span>Leo Tolstoy</span>
+              <span>Fyodor Dostoevsky</span>
+              <span>Herman Melville</span>
+              <span>Mark Twain</span>
+              <span>George Orwell</span>
+              <span>Harper Lee</span>
+              <span>J.K. Rowling</span>
+              <span>J.R.R. Tolkien</span>
+            </>
+          )}
+        </div>
+
         {/* Literary Quotes */}
         <div className="parallax-background__quotes">
           <span>"To read is to voyage through time..."</span>
           <span>"Words are powerful..."</span>
           <span>"Every book is a world..."</span>
           <span>"Stories shape us..."</span>
-          <span>"Literature is the mirror of humanity..."</span>
-          <span>"In books we trust..."</span>
-          <span>"Knowledge is power..."</span>
-          <span>"Read more, worry less..."</span>
-        </div>
-
-        {/* Scattered Letters */}
-        <div className="parallax-background__letters">
-          <span>A</span>
-          <span>B</span>
-          <span>C</span>
-          <span>D</span>
-          <span>E</span>
-          <span>F</span>
-          <span>G</span>
-          <span>H</span>
-          <span>I</span>
-          <span>J</span>
-          <span>K</span>
-          <span>L</span>
-          <span>M</span>
-          <span>N</span>
-          <span>O</span>
-          <span>P</span>
         </div>
       </div>
     </div>
