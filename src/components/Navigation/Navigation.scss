@@ -24,6 +24,12 @@
     pointer-events: all;
   }
   
+  &--hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-100%) !important;
+  }
+  
   &:hover {
     background: rgba($primary-dark, 0.95);
   }

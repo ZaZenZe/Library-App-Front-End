@@ -128,7 +128,43 @@ export function useBooks() {
  * Fetch single book by ID
  */
 export function useBook(id: number, immediate = true) {
-  return useAPI(() => booksAPI.getById(id), { immediate });
+  const [data, setData] = useState<Book | null>(null);
+  const [loading, setLoading] = useState<boolean>(immediate);
+  const [error, setError] = useState<APIError | null>(null);
+
+  const execute = useCallback(async () => {
+    if (!id) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await booksAPI.getById(id);
+      setData(result);
+    } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      setError({
+        message: errorMessage,
+        status: getErrorStatus(err),
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  const reset = useCallback(() => {
+    setData(null);
+    setLoading(false);
+    setError(null);
+  }, []);
+
+  useEffect(() => {
+    if (immediate && id) {
+      execute();
+    }
+  }, [execute, immediate, id]);
+
+  return { data, loading, error, execute, reset };
 }
 
 /**

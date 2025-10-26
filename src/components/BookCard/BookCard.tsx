@@ -52,14 +52,20 @@ function BookCard({ book, onCardClick, index = 0 }: BookCardProps) {
       role="button"
       aria-label={`View details for ${book.title}`}
     >
-      {/* Book Cover (Generated) */}
+      {/* Book Cover (Thumbnail or Generated) */}
       <div
         className="book-card__cover"
-        style={{ background: generateCoverColor(book.title) }}
+        style={{ 
+          background: book.details?.thumbnail || book.details?.smallThumbnail 
+            ? `url(${book.details.thumbnail || book.details.smallThumbnail}) center/cover`
+            : generateCoverColor(book.title) 
+        }}
       >
-        <span className="book-card__cover-title">
-          {book.title.substring(0, 1)}
-        </span>
+        {!(book.details?.thumbnail || book.details?.smallThumbnail) && (
+          <span className="book-card__cover-title">
+            {book.title.substring(0, 1)}
+          </span>
+        )}
       </div>
 
       {/* Book Info */}

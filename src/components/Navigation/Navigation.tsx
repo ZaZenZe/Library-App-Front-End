@@ -13,9 +13,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface NavigationProps {
   onNavigate?: (section: 'hero' | 'books' | 'authors' | 'about') => void;
+  isHidden?: boolean; // Hide navigation when modals are open
 }
 
-function Navigation({ onNavigate }: NavigationProps) {
+function Navigation({ onNavigate, isHidden = false }: NavigationProps) {
   const navRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('hero');
@@ -92,9 +93,10 @@ function Navigation({ onNavigate }: NavigationProps) {
   return (
     <nav
       ref={navRef}
-      className={`navigation ${isVisible ? 'navigation--visible' : ''}`}
+      className={`navigation ${isVisible ? 'navigation--visible' : ''} ${isHidden ? 'navigation--hidden' : ''}`}
       role="navigation"
       aria-label="Main navigation"
+      style={{ pointerEvents: isHidden ? 'none' : 'auto' }}
     >
       <div className="navigation__container">
         {/* Logo */}

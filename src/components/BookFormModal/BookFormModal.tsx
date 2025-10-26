@@ -16,16 +16,20 @@ interface FormData {
   title: string;
   authorId: string;
   isbn: string;
-  year: string; // Match API field name
-  genre: string;
+  year: string;
+  publisherName: string; // Publisher name
+  description: string; // Book description
+  thumbnail: string; // Cover image URL
 }
 
 interface FormErrors {
   title?: string;
   authorId?: string;
   isbn?: string;
-  year?: string; // Match API field name
-  genre?: string;
+  year?: string;
+  publisherName?: string;
+  description?: string;
+  thumbnail?: string;
 }
 
 export const BookFormModal: React.FC<BookFormModalProps> = ({
@@ -46,7 +50,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     authorId: '',
     isbn: '',
     year: '',
-    genre: '',
+    publisherName: '',
+    description: '',
+    thumbnail: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isbnImportValue, setIsbnImportValue] = useState('');
@@ -60,7 +66,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
         authorId: editBook.authorId.toString(),
         isbn: editBook.isbn,
         year: editBook.year.toString(),
-        genre: '', // Genre not stored in Book model
+        publisherName: editBook.publisher?.name || '',
+        description: editBook.details?.description || '',
+        thumbnail: editBook.details?.thumbnail || '',
       });
     } else {
       // Reset form when not editing
@@ -69,7 +77,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
         authorId: '',
         isbn: '',
         year: '',
-        genre: '',
+        publisherName: '',
+        description: '',
+        thumbnail: '',
       });
     }
     setErrors({});
@@ -143,7 +153,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       authorId: parseInt(formData.authorId),
       isbn: formData.isbn.trim(),
       year: parseInt(formData.year),
-      genre: formData.genre.trim() || undefined, // Optional field
+      publisherName: formData.publisherName.trim() || undefined,
+      description: formData.description.trim() || undefined,
+      thumbnail: formData.thumbnail.trim() || undefined,
     };
 
     try {
@@ -189,7 +201,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
         authorId: result.authorId.toString(),
         isbn: result.isbn,
         year: result.year.toString(),
-        genre: '', // Genre not returned by import
+        publisherName: result.publisher?.name || '',
+        description: result.details?.description || '',
+        thumbnail: result.details?.thumbnail || result.details?.smallThumbnail || '',
       });
       setShowIsbnImport(false);
       setIsbnImportValue('');
@@ -396,22 +410,65 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                 )}
               </div>
 
-              {/* Genre Field */}
+              {/* Publisher Name Field */}
               <div className="book-form-modal__field">
-                <label htmlFor="book-genre" className="book-form-modal__label">
-                  Genre
+                <label htmlFor="book-publisher" className="book-form-modal__label">
+                  Publisher
                 </label>
                 <input
-                  id="book-genre"
+                  id="book-publisher"
                   type="text"
-                  className={`book-form-modal__input ${errors.genre ? 'book-form-modal__input--error' : ''}`}
-                  placeholder="Fiction, Mystery, Science Fiction, etc."
-                  value={formData.genre}
-                  onChange={(e) => handleInputChange('genre', e.target.value)}
+                  className={`book-form-modal__input ${errors.publisherName ? 'book-form-modal__input--error' : ''}`}
+                  placeholder="Penguin Random House, HarperCollins, etc."
+                  value={formData.publisherName}
+                  onChange={(e) => handleInputChange('publisherName', e.target.value)}
                   disabled={isSubmitting}
                 />
-                {errors.genre && (
-                  <span className="book-form-modal__error">{errors.genre}</span>
+                {errors.publisherName && (
+                  <span className="book-form-modal__error">{errors.publisherName}</span>
+                )}
+              </div>
+
+              {/* Description Field */}
+              <div className="book-form-modal__field">
+                <label htmlFor="book-description" className="book-form-modal__label">
+                  Description
+                </label>
+                <textarea
+                  id="book-description"
+                  className={`book-form-modal__textarea ${errors.description ? 'book-form-modal__input--error' : ''}`}
+                  placeholder="A brief description of the book..."
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  disabled={isSubmitting}
+                  rows={4}
+                />
+                {errors.description && (
+                  <span className="book-form-modal__error">{errors.description}</span>
+                )}
+              </div>
+
+              {/* Cover Image URL Field */}
+              <div className="book-form-modal__field">
+                <label htmlFor="book-thumbnail" className="book-form-modal__label">
+                  Cover Image URL
+                </label>
+                <input
+                  id="book-thumbnail"
+                  type="url"
+                  className={`book-form-modal__input ${errors.thumbnail ? 'book-form-modal__input--error' : ''}`}
+                  placeholder="https://example.com/book-cover.jpg"
+                  value={formData.thumbnail}
+                  onChange={(e) => handleInputChange('thumbnail', e.target.value)}
+                  disabled={isSubmitting}
+                />
+                {errors.thumbnail && (
+                  <span className="book-form-modal__error">{errors.thumbnail}</span>
+                )}
+                {formData.thumbnail && (
+                  <div className="book-form-modal__thumbnail-preview">
+                    <img src={formData.thumbnail} alt="Cover preview" />
+                  </div>
                 )}
               </div>
 

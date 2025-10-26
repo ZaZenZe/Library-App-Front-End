@@ -146,7 +146,10 @@ function App() {
     <>
       {isLoading && <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />}
       
-      <Navigation onNavigate={handleNavigate} />
+      <Navigation 
+        onNavigate={handleNavigate} 
+        isHidden={isModalOpen || isFormModalOpen || isAuthorModalOpen || isAuthorFormModalOpen}
+      />
       
       {/* Pass books and authors data to ParallaxBackground to prevent duplicate API calls */}
       <ParallaxBackground 

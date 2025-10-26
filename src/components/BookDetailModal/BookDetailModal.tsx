@@ -147,16 +147,22 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
           <div className="book-detail-modal__cover-section">
             <motion.div
               className="book-detail-modal__cover"
-              style={{ background: generateCoverColor(book.title) }}
+              style={
+                book.details?.thumbnail || book.details?.smallThumbnail
+                  ? { backgroundImage: `url(${book.details.thumbnail || book.details.smallThumbnail})` }
+                  : { background: generateCoverColor(book.title) }
+              }
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
-              <div className="book-detail-modal__cover-overlay">
-                <span className="book-detail-modal__cover-letter">
-                  {book.title.charAt(0).toUpperCase()}
-                </span>
-              </div>
+              {!(book.details?.thumbnail || book.details?.smallThumbnail) && (
+                <div className="book-detail-modal__cover-overlay">
+                  <span className="book-detail-modal__cover-letter">
+                    {book.title.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
             </motion.div>
           </div>
 
@@ -172,6 +178,19 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
                 by <span>{book.author?.name || 'Unknown Author'}</span>
               </p>
             </motion.div>
+
+            {/* Description */}
+            {book.details?.description && (
+              <motion.div
+                className="book-detail-modal__description"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.15 }}
+              >
+                <h3 className="book-detail-modal__section-title">Description</h3>
+                <p className="book-detail-modal__description-text">{book.details.description}</p>
+              </motion.div>
+            )}
 
             <motion.div
               className="book-detail-modal__meta"

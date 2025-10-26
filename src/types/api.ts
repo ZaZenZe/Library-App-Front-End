@@ -22,9 +22,22 @@ export interface Author {
 }
 
 /**
+ * Book Details as returned by Google Books API import
+ * Contains extended metadata about the book
+ */
+export interface BookDetails {
+  id: number; // Primary key
+  bookId: number; // FK to Book
+  description?: string | null; // Book description/summary
+  smallThumbnail?: string | null; // Smallest thumbnail URL
+  thumbnail?: string | null; // Standard thumbnail URL
+}
+
+/**
  * Book as returned by API
  * IMPORTANT: Always includes nested author object
  * May include nested publisher object (can be null)
+ * May include details object if imported from Google Books
  */
 export interface Book {
   id: number;
@@ -35,6 +48,7 @@ export interface Book {
   publisherId?: number | null; // Internal FK - don't display to users
   author: Author; // ALWAYS present in API response
   publisher?: Publisher | null; // May be null
+  details?: BookDetails | null; // Extended metadata from Google Books
 }
 
 // ============================================
@@ -45,16 +59,24 @@ export interface CreateBookDTO {
   title: string;
   authorId: number;
   isbn: string;
-  year: number; // Match API field name
-  genre?: string; // Optional in some endpoints
+  year: number;
+  publisherId?: number | null; // Optional publisher
+  publisherName?: string; // For creating new publisher
+  description?: string; // Optional description
+  thumbnail?: string; // Optional cover image URL
+  smallThumbnail?: string; // Optional small cover image URL
 }
 
 export interface UpdateBookDTO {
   title: string;
   authorId: number;
   isbn: string;
-  year: number; // Match API field name
-  genre?: string;
+  year: number;
+  publisherId?: number | null;
+  publisherName?: string;
+  description?: string;
+  thumbnail?: string;
+  smallThumbnail?: string;
 }
 
 export interface CreateAuthorDTO {

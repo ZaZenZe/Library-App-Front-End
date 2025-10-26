@@ -33,7 +33,7 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 900px;
+    max-width: 1100px;
     max-height: 90vh;
     overflow-y: auto;
     overflow-x: hidden; // Prevent horizontal scroll issues
@@ -179,17 +179,16 @@
     font-size: 1.6rem;
   }
 
-  // Content layout - Fixed to prevent overflow
+  // Content layout - Vertical stack for better display
   &__content {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
     padding-right: 6rem; // Extra space for close button
-    align-items: start; // Prevent stretching
+    align-items: center; // Center content
 
     @media (max-width: $breakpoint-tablet) {
-      grid-template-columns: 1fr;
-      gap: 3rem;
+      gap: 2.5rem;
       padding-right: 6rem; // Keep space for close button
     }
 
@@ -212,7 +211,7 @@
 
   &__cover {
     width: 300px;
-    aspect-ratio: 3 / 4;
+    min-height: 400px;
     border-radius: 1.6rem;
     position: relative;
     overflow: hidden;
@@ -222,13 +221,18 @@
       0 0 30px rgba($accent-pink, 0.25),
       0 0 15px rgba($accent-cyan, 0.15);
     border: 2px solid rgba($accent-pink, 0.4);
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
 
     @media (max-width: $breakpoint-tablet) {
       width: 250px;
+      min-height: 333px;
     }
 
     @media (max-width: $breakpoint-mobile) {
       width: 200px;
+      min-height: 267px;
     }
   }
 
@@ -265,13 +269,13 @@
     }
   }
 
-  // Details section
+  // Details section - Full width display
   &__details {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
-    min-width: 0; // Allow flex item to shrink properly
-    overflow: hidden; // Prevent content overflow
+    gap: 2.5rem;
+    width: 100%; // Full width
+    max-width: 900px; // Limit for readability
 
     @media (max-width: $breakpoint-mobile) {
       gap: 2rem;
@@ -303,6 +307,60 @@
       font-weight: 600;
       font-family: $font-heading;
     }
+  }
+
+  // Rating
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-top: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    background: rgba($accent-pink, 0.1);
+    border: 1px solid rgba($accent-pink, 0.3);
+    border-radius: $radius-lg;
+    width: fit-content;
+  }
+
+  &__rating-stars {
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+
+  &__rating-value {
+    font-family: $font-mono;
+    font-size: 1.8rem;
+    font-weight: $font-weight-bold;
+    color: $accent-pink;
+  }
+
+  // Description section
+  &__description {
+    padding: $spacing-xl;
+    background: rgba($deep-blue, 0.4);
+    border: 1px solid rgba($accent-cyan, 0.2);
+    border-radius: $radius-lg;
+    width: 100%; // Full width
+  }
+
+  &__section-title {
+    font-size: 1.8rem;
+    font-family: $font-heading;
+    font-weight: $font-weight-bold;
+    color: $accent-cyan;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 $spacing-md 0;
+  }
+
+  &__description-text {
+    font-size: 1.6rem;
+    line-height: 1.7;
+    color: $foreground;
+    margin: 0;
+    text-align: justify;
+    word-wrap: break-word; // Ensure long words wrap
+    overflow-wrap: break-word;
   }
 
   // Metadata grid - Sakura theme
