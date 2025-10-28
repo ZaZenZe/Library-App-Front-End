@@ -2,7 +2,8 @@
 // LOADING SCREEN COMPONENT
 // ============================================
 
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState, useRef } from 'react';
 import { useFontCycle } from '../../hooks/useFontCycle';
 import './LoadingScreen.scss';
 
@@ -18,26 +19,78 @@ export function LoadingScreen({
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [shouldHide, setShouldHide] = useState(false);
-  
-  // Font cycling for "LOADING LIBRARY..." text
-  const cyclingFont = useFontCycle({ interval: 500 });
+  const [headlineIndex, setHeadlineIndex] = useState(0);
+  const [tickerText, setTickerText] = useState('');
+  const tickerRef = useRef<HTMLDivElement>(null);
+  // Font cycling for headline
+  const cyclingFont = useFontCycle({ interval: 700 });
 
+// Newspaper/journal headlines (move outside component for stable reference)
+const headlines = [
+  'THE DIGITAL LIBRARY JOURNAL',
+  'BREAKING: NEW BOOKS ARRIVE',
+  'AUTHORS IN THE SPOTLIGHT',
+  'CURATE YOUR COLLECTION',
+  'ARCHIVING KNOWLEDGE SINCE 2025',
+];
+// Ticker lines (like news tickers)
+const tickerLines = [
+  'Loading catalog... ',
+  'Fetching latest books... ',
+  'Indexing authors... ',
+  'Organizing shelves... ',
+  'Preparing reading room... ',
+  'Almost ready! ',
+];
+
+  // Animate progress bar (120fps)
   useEffect(() => {
-    // Simulate loading progress
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        // Accelerate progress towards the end
-        const increment = prev < 50 ? 2 : prev < 80 ? 3 : 5;
-        return Math.min(prev + increment, 100);
-      });
-    }, duration / 50); // 50 steps
-
-    return () => clearInterval(progressInterval);
+    let frame: number;
+    let start: number | null = null;
+    const total = duration;
+    function animate(ts: number) {
+      if (!start) start = ts;
+      const elapsed = ts - start;
+      const percent = Math.min(100, Math.round((elapsed / total) * 100));
+      setProgress(percent);
+      if (percent < 100) {
+        frame = requestAnimationFrame(animate);
+      }
+    }
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
   }, [duration]);
+
+  // Cycle headlines every 1.2s
+  useEffect(() => {
+    if (isComplete) return;
+    const interval = setInterval(() => {
+      setHeadlineIndex((i) => (i + 1) % headlines.length);
+    }, 1200);
+    return () => clearInterval(interval);
+  }, [isComplete, headlines.length]);
+
+  // Animate ticker (typewriter effect)
+  useEffect(() => {
+    if (isComplete) return;
+    let tickerIdx = 0;
+    let charIdx = 0;
+  let timeout: number;
+    function typeNext() {
+      const line = tickerLines[tickerIdx % tickerLines.length];
+      setTickerText(line.slice(0, charIdx));
+      if (charIdx < line.length) {
+        charIdx++;
+        timeout = setTimeout(typeNext, 18); // ~120fps
+      } else {
+        charIdx = 0;
+        tickerIdx++;
+        timeout = setTimeout(typeNext, 600);
+      }
+    }
+    typeNext();
+    return () => clearTimeout(timeout);
+  }, [isComplete]);
 
   useEffect(() => {
     if (progress === 100) {
@@ -61,53 +114,29 @@ export function LoadingScreen({
   if (shouldHide) return null;
 
   return (
-    <div 
-      className={`loading-screen ${isComplete ? 'loading-screen--complete' : ''}`}
+    <div
+      className={`loading-screen loading-screen--newspaper ${isComplete ? 'loading-screen--complete' : ''}`}
       role="progressbar"
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label="Loading library"
     >
-      {/* Background Gradient Orbs */}
-      <div className="loading-screen__bg-orb loading-screen__bg-orb--1" />
-      <div className="loading-screen__bg-orb loading-screen__bg-orb--2" />
-      <div className="loading-screen__bg-orb loading-screen__bg-orb--3" />
-
-      {/* Main Content */}
-      <div className="loading-screen__content">
-        {/* Book Stack Animation */}
-        <div className="loading-screen__book-stack">
-          <div className="loading-screen__book loading-screen__book--1">
-            <div className="book-spine"></div>
-          </div>
-          <div className="loading-screen__book loading-screen__book--2">
-            <div className="book-spine"></div>
-          </div>
-          <div className="loading-screen__book loading-screen__book--3">
-            <div className="book-spine"></div>
-          </div>
-          <div className="loading-screen__book loading-screen__book--4">
-            <div className="book-spine"></div>
-          </div>
+      {/* Newspaper background pattern */}
+      <div className="loading-screen__newspaper-bg" />
+      <div className="loading-screen__content loading-screen__content--newspaper">
+        {/* Animated Headline */}
+        <div className="loading-screen__headline" style={{ fontFamily: cyclingFont }}>
+          {headlines[headlineIndex]}
         </div>
-
-        {/* Library Logo/Icon */}
-        <div className="loading-screen__icon">
-          📚
+        {/* Ticker (typewriter) */}
+        <div className="loading-screen__ticker" ref={tickerRef}>
+          <span className="loading-screen__ticker-label">NEWS</span>
+          <span className="loading-screen__ticker-text">{tickerText}</span>
         </div>
-
-        {/* Loading Text with Font Cycling */}
-        <h2 
-          className="loading-screen__text"
-          style={{ fontFamily: cyclingFont }}
-        >
-          LOADING LIBRARY...
-        </h2>
-
         {/* Progress Bar */}
-        <div className="loading-screen__progress-bar">
-          <div 
+        <div className="loading-screen__progress-bar loading-screen__progress-bar--newspaper">
+          <div
             className="loading-screen__progress-fill"
             style={{ width: `${progress}%` }}
           />
@@ -115,14 +144,6 @@ export function LoadingScreen({
             {progress}%
           </div>
         </div>
-
-        {/* Fun Loading Messages */}
-        <p className="loading-screen__subtitle">
-          {progress < 30 && "Opening the catalog..."}
-          {progress >= 30 && progress < 60 && "Dusting off the shelves..."}
-          {progress >= 60 && progress < 90 && "Organizing by Dewey Decimal..."}
-          {progress >= 90 && "Almost ready to browse!"}
-        </p>
       </div>
     </div>
   );

@@ -6,25 +6,128 @@
 @import '../../styles/mixins';
 @import '../../styles/animations';
 
+
 .loading-screen {
   @include fixed-cover;
   @include flex-center;
-  background: linear-gradient(135deg, $primary-dark 0%, $deep-blue 100%);
+  background: $primary-dark;
   z-index: $z-loading;
   overflow: hidden;
   transition: opacity 0.8s $ease-smooth;
-  
-  // Force hide scrollbar on body when loading screen is active
-  & {
-    body {
-      overflow: hidden !important;
-    }
-  }
-  
+  font-family: $font-mono;
   &--complete {
     opacity: 0;
     pointer-events: none;
   }
+}
+
+// Newspaper/journal background (subtle paper texture)
+.loading-screen__newspaper-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 32px),
+    $primary-dark;
+  opacity: 0.95;
+  filter: contrast(1.1) brightness(0.98);
+}
+
+.loading-screen__content--newspaper {
+  @include flex-column-center;
+  gap: $spacing-xl;
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: $spacing-2xl $spacing-lg;
+  box-sizing: border-box;
+}
+
+// Headline (animated)
+.loading-screen__headline {
+  font-family: $font-heading;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 900;
+  color: $foreground;
+  text-align: center;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 #111, 0 0 16px rgba($accent-cyan, 0.12);
+  border-bottom: 2px solid $accent-pink;
+  padding-bottom: $spacing-md;
+  margin-bottom: $spacing-lg;
+  animation: headlineFade 1.2s cubic-bezier(0.4,0,0.2,1);
+  will-change: opacity, transform;
+}
+
+@keyframes headlineFade {
+  0% { opacity: 0; transform: translateY(24px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+// Ticker (typewriter)
+.loading-screen__ticker {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: rgba($deep-blue, 0.92);
+  border: 1.5px solid $border-glow;
+  border-radius: $radius-md;
+  box-shadow: 0 2px 12px rgba($accent-cyan, 0.08);
+  font-size: 1.25rem;
+  font-family: $font-mono;
+  color: $accent-cyan;
+  overflow: hidden;
+  margin-bottom: $spacing-lg;
+  min-height: 2.2em;
+}
+.loading-screen__ticker-label {
+  background: $accent-pink;
+  color: #fff;
+  font-weight: bold;
+  padding: 0.2em 0.8em;
+  border-right: 2px solid $accent-purple;
+  font-size: 1.1em;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 2px #111;
+}
+.loading-screen__ticker-text {
+  padding-left: 1em;
+  font-family: $font-mono;
+  font-size: 1.1em;
+  letter-spacing: 0.04em;
+  white-space: pre;
+  animation: tickerCaret 1.2s steps(1) infinite;
+}
+@keyframes tickerCaret {
+  0%, 100% { border-right: 2px solid $accent-cyan; }
+  50% { border-right: 2px solid transparent; }
+}
+
+// Progress bar (newspaper style)
+.loading-screen__progress-bar--newspaper {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  height: 10px;
+  background: rgba($deep-blue, 0.7);
+  border-radius: $radius-full;
+  border: 1.5px solid $border-glow;
+  box-shadow: 0 0 10px rgba($accent-cyan, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+// Remove book stack, emoji, orbs, and subtitle for this style
+.loading-screen__book-stack,
+.loading-screen__icon,
+.loading-screen__bg-orb,
+.loading-screen__subtitle {
+  display: none !important;
 }
 
 // ============================================
