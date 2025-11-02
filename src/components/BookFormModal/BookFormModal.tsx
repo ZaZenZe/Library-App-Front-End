@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Book, CreateBookDTO, UpdateBookDTO, BookSearchResult, Author } from '../../types/api';
+import type { Book, CreateBookDTO, UpdateBookDTO, BookSearchResult } from '../../types/api';
 import { useCreateBook, useUpdateBook, useImportBook, useSearchBooks, useAuthors, useCreateAuthor } from '../../hooks/useAPI';
 import { useDebounce } from '../../hooks/useDebounce';
 import './BookFormModal.scss';
@@ -67,7 +67,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [currentMaxResults, setCurrentMaxResults] = useState(5); // Start with 5 results
+  const [currentMaxResults, setCurrentMaxResults] = useState(10); // Start with 10 results
   const [canLoadMore, setCanLoadMore] = useState(false); // Track if more results might be available
   const autocompleteRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -160,13 +160,14 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     const performSearch = async () => {
       // Only search if: 1) not in edit mode, 2) has 3+ chars, 3) input is focused
       if (debouncedTitle.trim().length >= 3 && !isEditMode && titleInputRef.current === document.activeElement) {
-        // Reset to 5 results when search query changes
-        setCurrentMaxResults(5);
-        const results = await searchBooks(debouncedTitle, 5);
+        // Reset to 10 results when search query changes
+        const resetMaxResults = 10;
+        setCurrentMaxResults(resetMaxResults);
+        const results = await searchBooks(debouncedTitle, resetMaxResults);
         setSearchResults(results);
         setShowAutocomplete(results.length > 0);
-        // If we got 5 results, there might be more available
-        setCanLoadMore(results.length === 5);
+        // If we got 10 results, there might be more available (up to 40)
+        setCanLoadMore(results.length === resetMaxResults);
       } else {
         setSearchResults([]);
         setShowAutocomplete(false);
@@ -177,17 +178,18 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     performSearch();
   }, [debouncedTitle, searchBooks, isEditMode]);
 
-  // Function to load more results
+  // Function to load more results - directly fetches with new limit
   const handleLoadMore = useCallback(async () => {
     if (!debouncedTitle.trim() || searching) return;
     
-    const newMaxResults = currentMaxResults + 5;
+    const newMaxResults = Math.min(currentMaxResults + 10, 40); // Load 10 more, cap at 40
     setCurrentMaxResults(newMaxResults);
     
+    // Fetch with the new limit
     const results = await searchBooks(debouncedTitle, newMaxResults);
     setSearchResults(results);
-    // If results length equals what we asked for, there might be more
-    setCanLoadMore(results.length === newMaxResults);
+    // If results length equals what we asked for and we're not at cap, there might be more
+    setCanLoadMore(results.length === newMaxResults && newMaxResults < 40);
   }, [debouncedTitle, currentMaxResults, searchBooks, searching]);
 
   // Click outside to close autocomplete
@@ -319,17 +321,15 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
           publisherId: editBook.publisherId || null, // Keep existing publisher or null
         };
 
-        // Add optional fields if they have values
-        if (formData.description.trim()) {
-          updateData.description = formData.description.trim();
-        }
-        if (formData.thumbnail.trim()) {
-          updateData.thumbnail = formData.thumbnail.trim();
-        }
+        // Add optional fields - send null if empty to clear them
+        updateData.description = formData.description.trim() || null;
+        updateData.thumbnail = formData.thumbnail.trim() || null;
+        updateData.smallThumbnail = editBook.details?.smallThumbnail || null;
 
         const result = await updateBook(editBook.id, updateData);
 
         if (result) {
+          // Trigger success - this will refresh books AND authors
           onSuccess?.(result);
           onClose();
         } else {
@@ -529,7 +529,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                         transition={{ duration: 0.2 }}
                       >
                         <div className="book-form-modal__autocomplete-header">
-                          Found {searchResults.length} book{searchResults.length !== 1 ? 's' : ''} from Google Books
+                          Books found from Google Books
                         </div>
                         <ul className="book-form-modal__autocomplete-list">
                           {searchResults.map((book, index) => (
@@ -577,7 +577,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                               onClick={handleLoadMore}
                               disabled={searching}
                             >
-                              {searching ? 'Loading...' : 'Load 5 More Results'}
+                              {searching ? 'Loading...' : 'Load More Books'}
                             </button>
                           </div>
                         )}

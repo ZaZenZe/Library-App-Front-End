@@ -122,10 +122,11 @@ export const booksAPI = {
    * Search books by title (Google Books API)
    * GET /books/search?title={title}&maxResults={maxResults}
    * NOTE: This does NOT save to database - just returns search results
+   * Maximum allowed by API: 40 results
    */
-  searchByTitle: async (title: string, maxResults: number = 5): Promise<BookSearchResult[]> => {
+  searchByTitle: async (title: string, maxResults: number = 40): Promise<BookSearchResult[]> => {
     const response = await apiClient.get<BookSearchResult[]>('/books/search', {
-      params: { title, maxResults }
+      params: { title, maxResults: Math.min(maxResults, 40) } // Cap at 40 (API limit)
     });
     return response.data;
   },

@@ -85,8 +85,9 @@ export interface UpdateBookDTO {
   isbn: string;
   year: number;
   publisherId?: number | null; // Optional publisher ID
-  description?: string; // Optional description (new - can update)
-  thumbnail?: string; // Optional thumbnail (new - can update)
+  description?: string | null; // Optional description
+  smallThumbnail?: string | null; // Optional small thumbnail
+  thumbnail?: string | null; // Optional thumbnail
 }
 
 export interface CreateAuthorDTO {

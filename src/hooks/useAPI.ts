@@ -302,14 +302,14 @@ export function useSearchBooks() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<APIError | null>(null);
 
-  const searchBooks = useCallback(async (title: string, maxResults: number = 5): Promise<BookSearchResult[]> => {
+  const searchBooks = useCallback(async (title: string, maxResults: number = 40): Promise<BookSearchResult[]> => {
     if (!title.trim()) return [];
     
     setLoading(true);
     setError(null);
     
     try {
-      const result = await booksAPI.searchByTitle(title, maxResults);
+      const result = await booksAPI.searchByTitle(title, Math.min(maxResults, 40)); // Cap at 40
       return result;
     } catch (err) {
       const errorMessage = getErrorMessage(err);
