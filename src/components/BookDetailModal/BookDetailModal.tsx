@@ -24,6 +24,13 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
   const { data: book, loading: isLoading, error, execute: refetch } = useBook(bookId || 0, !!bookId);
   const { deleteBook, loading: isDeleting } = useDeleteBook();
 
+  // Refetch book data when modal opens (to get latest changes)
+  useEffect(() => {
+    if (isOpen && bookId) {
+      refetch();
+    }
+  }, [isOpen, bookId, refetch]);
+
   // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

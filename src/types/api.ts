@@ -55,38 +55,50 @@ export interface Book {
 // DTO TYPES (for API requests)
 // ============================================
 
+/**
+ * Book Search Result from Google Books API
+ * Returned by GET /books/search - NOT saved to database
+ * Different structure from Book entity (flat instead of nested)
+ */
+export interface BookSearchResult {
+  title: string;
+  authors: string[]; // Array of author names
+  publisher?: string | null;
+  year?: number | null;
+  isbn?: string | null;
+  description?: string | null;
+  averageRating?: number | null;
+  thumbnail?: string | null;
+}
+
 export interface CreateBookDTO {
   title: string;
-  authorName: string; // Author name as string (backend will find or create)
+  authorId: number; // Author ID (required)
   isbn: string;
   year: number;
-  publisherId?: number | null; // Optional publisher
-  publisherName?: string; // For creating new publisher
-  description?: string; // Optional description
-  thumbnail?: string; // Optional cover image URL
-  smallThumbnail?: string; // Optional small cover image URL
+  publisherId?: number | null; // Optional publisher ID
+  description?: string | null; // Optional description (creates BookDetails)
+  smallThumbnail?: string | null; // Optional small thumbnail
+  thumbnail?: string | null; // Optional thumbnail
 }
 
 export interface UpdateBookDTO {
   title: string;
-  authorName: string; // Author name as string
+  authorId: number; // Author ID (required)
   isbn: string;
   year: number;
-  publisherId?: number | null;
-  publisherName?: string;
-  description?: string;
-  thumbnail?: string;
-  smallThumbnail?: string;
+  publisherId?: number | null; // Optional publisher ID
+  description?: string | null; // Optional description
+  smallThumbnail?: string | null; // Optional small thumbnail
+  thumbnail?: string | null; // Optional thumbnail
 }
 
 export interface CreateAuthorDTO {
   name: string;
-  bio?: string;
 }
 
 export interface UpdateAuthorDTO {
   name: string;
-  bio?: string;
 }
 
 // ============================================

@@ -84,18 +84,21 @@ function App() {
   }
 
   const handleBookDeleted = () => {
-    // Refresh books list
+    // Refresh books list AND authors list
     refetchBooks();
+    refetchAuthors();
     setIsModalOpen(false)
     setSelectedBookId(null)
     success('Book deleted successfully! 🗑️')
   }
 
   const handleEditBook = (book: Book) => {
+    // Store the book ID so we can reopen detail modal after edit
+    setSelectedBookId(book.id);
     // Open edit form with book data
     setEditingBook(book);
     setIsFormModalOpen(true);
-    setIsModalOpen(false);
+    setIsModalOpen(false); // Close detail modal while editing
   }
 
   const handleAddBook = () => {
@@ -104,9 +107,19 @@ function App() {
   }
 
   const handleFormSuccess = () => {
-    // Refresh books list
+    // Refresh books list AND authors list (in case new author was created/updated)
     refetchBooks();
+    refetchAuthors();
     setIsFormModalOpen(false);
+    
+    // If we were editing (not adding), reopen the detail modal with updated data
+    if (editingBook && selectedBookId) {
+      // Small delay to ensure refetch completes
+      setTimeout(() => {
+        setIsModalOpen(true);
+      }, 100);
+    }
+    
     setEditingBook(null);
     success(editingBook ? 'Book updated successfully! ✨' : 'Book added to your library! 📚')
   }
@@ -127,15 +140,27 @@ function App() {
   }
 
   const handleEditAuthor = (author: Author) => {
+    // Store the author ID so we can reopen detail modal after edit
+    setSelectedAuthorId(author.id);
     setEditingAuthor(author);
-    setIsAuthorModalOpen(false);
+    setIsAuthorModalOpen(false); // Close detail modal while editing
     setIsAuthorFormModalOpen(true);
   }
 
   const handleAuthorFormSuccess = () => {
-    // Refresh authors list
+    // Refresh authors list (and books since author names might appear in books)
     refetchAuthors();
+    refetchBooks();
     setIsAuthorFormModalOpen(false);
+    
+    // If we were editing (not adding), reopen the detail modal with updated data
+    if (editingAuthor && selectedAuthorId) {
+      // Small delay to ensure refetch completes
+      setTimeout(() => {
+        setIsAuthorModalOpen(true);
+      }, 100);
+    }
+    
     setEditingAuthor(null);
     success(editingAuthor ? 'Author profile updated successfully! ✨' : 'Author profile created successfully! 👤')
   }
@@ -146,8 +171,9 @@ function App() {
   }
 
   const handleAuthorDeleted = () => {
-    // Refresh authors list
+    // Refresh authors list AND books list (in case books were cascade deleted)
     refetchAuthors();
+    refetchBooks();
     setIsAuthorModalOpen(false);
     setSelectedAuthorId(null);
     success('Author deleted successfully! 🗑️')

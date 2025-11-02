@@ -1,7 +1,7 @@
 # Library App - Interactive Book Management System (React + TypeScript)
 ### - Made by Sayan "Ricky" DE
 - **Live Demo**: [Library-App-Front-End RSDE on Render.com](https://library-app-front-end-rsde.onrender.com) 
-- **Backend API**: [Library-App-DOT-NET](https://github.com/ZaZenZe/Library-App-DOT-NET/tree/extra_features_FF)
+- **Backend API**: [Library-App-DOT-NET](https://github.com/ZaZenZe/Library-App-DOT-NET/tree/more_extra_FEF)
 
 This project was built for the Front-End Framework lecture at our University. It's a modern, interactive library management application featuring a beautiful parallax design, dynamic book/author management, and seamless ISBN import functionality. Built with React, TypeScript, GSAP, and Framer Motion for smooth, professional animations.
 
@@ -19,16 +19,24 @@ This website embraces a **cyberpunk library aesthetic** with:
 ## ✨ Key Features
 
 ### 📚 Book Management
-- **Browse Books**: Grid view with search and sort functionality (title, year, date added)
+- **Browse Books**: Grid view with advanced search and sort functionality (title, year, date added)
 - **Book Details**: Modal with full information, author links, and cover images
-- **Add Books**: Manual form entry with validation
-- **ISBN Import**: Automatically fetch book data from Google Books API by entering ISBN
-- **Real-time Updates**: Books appear instantly without page refresh
-- **Search**: Filter by title, author, or ISBN
+- **Add Books**: 
+  - Manual form entry with real-time validation
+  - **Live Google Books Search**: Type-as-you-search autocomplete starting from the first letter
+  - **Load More Results**: Fetch books in batches of 5
+  - **ISBN Import**: One-click import from Google Books API with automatic author/publisher creation
+- **Edit Books**: Update title, author, year, description, and cover images
+- **Delete Books**: Remove books from the library with confirmation
+- **Real-time Updates**: All changes appear instantly without page refresh
+- **Search & Filter**: Find books by title, author, or ISBN with instant results
+- **Publisher Management**: Publishers automatically set via ISBN import (read-only in manual entry)
 
 ### 👤 Author Management
-- **Author Profiles**: Detailed bio, nationality, and book listings
-- **Add Authors**: Create author profiles with form validation
+- **Author Profiles**: Name changes and additions.
+- **Add Authors**: Create author profiles with comprehensive form validation
+- **Edit Authors**: Update author information
+- **Delete Authors**: Remove authors from the system with confirmation
 - **Auto-creation**: New authors automatically created when importing books via ISBN
 - **Real-time Updates**: Authors appear instantly without page refresh
 
@@ -50,19 +58,18 @@ This website embraces a **cyberpunk library aesthetic** with:
 
 ## ⚠️ **IMPORTANT LIMITATIONS**
 
-> **🚧 UPDATE & DELETE FEATURES ARE NOT YET IMPLEMENTED IN THE BACKEND API**
+> **✅ UPDATE & DELETE FEATURES ARE NOW FULLY IMPLEMENTED**
 >
-> The current backend API does **NOT** support:
-> - ❌ Updating existing books or authors
-> - ❌ Deleting books or authors
->
-> These features are present in the UI but **will not function** until the backend API is updated. They are included for **future implementation** and demonstration purposes only.
->
-> **Current Working Features:**
+> The backend API now supports all CRUD operations:
 > - ✅ Fetching/viewing all books and authors
-> - ✅ Adding new books (manual + ISBN import)
+> - ✅ Adding new books (manual entry + ISBN import with Google Books API)
 > - ✅ Adding new authors
+> - ✅ **Updating existing books and authors**
+> - ✅ **Deleting books and authors**
 > - ✅ Viewing detailed book/author information
+> - ✅ Real-time search with Google Books API integration
+>
+> **Note on Publishers**: Publishers are automatically created and linked via ISBN import only. The publisher field is read-only in manual book entry mode, as the backend does not yet expose dedicated `/publishers` endpoints for creating or managing publishers independently.
 
 ## 📁 Project Structure
 
@@ -150,31 +157,67 @@ Library-App-Front-End/
 
 ## 🛠️ Backend API Overview
 
-The backend for this project is a custom RESTful API written in **C# using the .NET framework**. It exposes endpoints for managing books and authors, and also integrates with the **Google Books API** to support ISBN-based book imports. The API is designed to be clean, fast, and easy to extend, following modern C# best practices. All data operations (fetching, creating, importing) are handled by this in-house backend, which you can find here:
+The backend for this project is a custom RESTful API written in **C# using the .NET framework**. It exposes comprehensive endpoints for managing books and authors, and integrates deeply with the **Google Books API** to support both real-time search and ISBN-based book imports. 
 
-**Backend Repository:** [Library-App-DOT-NET (extra_features_FF branch)](https://github.com/ZaZenZe/Library-App-DOT-NET/tree/extra_features_FF)
+**Key Backend Features:**
+- **Full CRUD Operations**: Create, Read, Update, and Delete for both books and authors
+- **Google Books Integration**: 
+  - Real-time search endpoint that queries Google Books API without saving results
+  - ISBN import endpoint that fetches full book data and auto-creates authors/publishers
+- **Automatic Relationship Management**: When importing via ISBN, the backend automatically creates authors and publishers if they don't exist
+- **Data Validation**: Comprehensive validation for ISBN format, year ranges, and required fields
+- **Error Handling**: Detailed error responses with status codes and messages
+
+The API follows REST best practices with proper HTTP verbs, status codes, and JSON responses. All data operations are handled by this in-house backend, which you can explore here:
+
+**Backend Repository:** [Library-App-DOT-NET (more_extra_FEF branch)](https://github.com/ZaZenZe/Library-App-DOT-NET/tree/more_extra_FEF)
 
 ---
 
 ## 🔌 Backend API Integration
 
-This frontend connects to a custom C# .NET REST API that integrates with the **Google Books API** for ISBN imports.
+This frontend connects to a custom C# .NET REST API that provides full CRUD operations and integrates with the **Google Books API** for real-time search and ISBN imports.
 
-**Backend Repository**: [Library-App-DOT-NET (extra_features_FF branch)](https://github.com/ZaZenZe/Library-App-DOT-NET/tree/extra_features_FF)
+**Backend Repository**: [Library-App-DOT-NET (more_extra_FEF branch)](https://github.com/ZaZenZe/Library-App-DOT-NET/tree/more_extra_FEF)
 
 ### API Endpoints Used
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/books` | GET | Fetch all books |
-| `/books/{id}` | GET | Fetch single book |
+| `/books/{id}` | GET | Fetch single book by ID |
+| `/books/isbn/{isbn}` | GET | Fetch single book by ISBN |
 | `/books` | POST | Create new book |
-| `/books/import/isbn/{isbn}` | POST | Import book via ISBN (Google Books API) |
+| `/books/{id}` | PUT | Update existing book |
+| `/books/{id}` | DELETE | Delete book |
+| `/books/import/isbn/{isbn}` | POST | Import book via ISBN (Google Books API - auto-creates author/publisher) |
+| `/books/search` | GET | Search books by title (Google Books API - does NOT save to database) |
 | `/authors` | GET | Fetch all authors |
-| `/authors/{id}` | GET | Fetch single author |
+| `/authors/{id}` | GET | Fetch single author by ID |
 | `/authors` | POST | Create new author |
+| `/authors/{id}` | PUT | Update existing author |
+| `/authors/{id}` | DELETE | Delete author |
 
-**Note**: Update and delete endpoints are not yet implemented in the backend.
+### Google Books API Integration
+
+The app features a **powerful live search system** that integrates with the Google Books API:
+
+- **Real-time Autocomplete**: Search results appear as you type (starting from the first letter)
+- **Batch Loading**: Initial results show 5 books, with "Load More" fetching 5 additional results at a time (up to 40 total)
+- **No Database Pollution**: Search results are NOT saved to the database - they're preview-only
+- **One-Click Import**: Click any search result to import it via the `/books/import/isbn/{isbn}` endpoint, which:
+  - Fetches complete book data from Google Books
+  - Automatically creates the author if they don't exist
+  - Automatically creates the publisher if they don't exist
+  - Links everything together and saves to your library
+  - Returns the fully-created book object
+
+**Search Flow:**
+1. User types in the title field → Debounced search triggers after 300ms
+2. Frontend calls `/books/search?title={query}&maxResults=5`
+3. Backend queries Google Books API and returns formatted results
+4. User clicks "Load More" → Frontend requests `/books/search?title={query}&maxResults=10` (then 15, 20, etc.)
+5. User selects a book → Frontend calls `/books/import/isbn/{isbn}` to save it permanently
 
 ## 🚀 Run Locally
 
@@ -222,39 +265,60 @@ The optimized output will be in the `dist/` directory.
 
 ## 🎯 Technical Implementation Highlights
 
+### Google Books API Integration & Smart Search
+- **Type-ahead Search**: Autocomplete starts working from the first character typed
+- **Debounced Requests**: 300ms delay prevents excessive API calls while typing
+- **Progressive Loading**: Fetch 5 results initially, then load 5 more at a time (up to 40 max)
+- **Smart Caching**: Search results update only when the query changes
+- **No Database Bloat**: Search results are preview-only and NOT saved automatically
+- **One-Click Import**: Selected books are imported via dedicated ISBN endpoint with full data
+
 ### Real-time Data Synchronization
-- **Refetch Pattern**: Custom hooks expose `refetch()` functions
-- **Instant Updates**: Books and authors refresh automatically after create operations
+- **Refetch Pattern**: Custom hooks expose `refetch()` functions for instant updates
+- **Instant Updates**: Books and authors refresh automatically after create/update/delete operations
 - **No Page Reloads**: Optimistic UI updates with automatic list refreshing
-- **ISBN Import**: Fetches from Google Books API and creates book + author in one operation
+- **ISBN Import**: Fetches from Google Books API and creates book + author + publisher in one operation
+- **Modal Re-opening**: After editing, detail modals automatically reopen with fresh data
 
 ### API Hook Architecture
 All API operations use custom React hooks with loading/error states:
 
 ```typescript
-// Example: useBooks hook
+// Example: useBooks hook with refetch
 const { data: books, loading, error, refetch } = useBooks();
+
+// Example: useUpdateBook hook
+const { updateBook, loading: updating } = useUpdateBook();
 
 // Trigger refetch after operations
 const handleFormSuccess = () => {
   refetchBooks(); // Instantly updates the list
-  success('Book added to your library! 📚');
+  success('Book updated successfully! 📚');
 };
 ```
 
+### Full CRUD Implementation
+- **Create**: `useCreateBook()`, `useCreateAuthor()` hooks with validation
+- **Read**: `useBooks()`, `useAuthors()`, `useBook(id)` hooks with auto-refetch
+- **Update**: `useUpdateBook()`, `useUpdateAuthor()` hooks with form pre-population
+- **Delete**: `useDeleteBook()`, `useDeleteAuthor()` hooks with confirmation dialogs
+- **Search**: `useSearchBooks()` hook for Google Books API integration
+
 ### Form Validation System
-- **Client-side validation**: Real-time error messages
-- **ISBN validation**: Regex pattern for ISBN format
-- **Year validation**: Min/max bounds with current year check
-- **Required fields**: Visual indicators and error states
-- **Error clearing**: Errors dismiss as user types
+- **Client-side validation**: Real-time error messages with visual feedback
+- **ISBN validation**: Regex pattern for ISBN-10/ISBN-13 format
+- **Year validation**: Range validation (0-3000) with current year awareness
+- **Required fields**: Visual indicators (red borders) and inline error messages
+- **Error clearing**: Errors automatically dismiss as user corrects input
+- **Conditional fields**: Publisher field shown only when data exists (ISBN imports/existing books)
 
 ### Modal Management
-- **Stacked modals**: Detail view → Edit form flow
-- **Keyboard navigation**: ESC key closes modals
-- **Click-outside**: Backdrop clicks close modals
-- **Scroll prevention**: Body scroll locked when modals open
-- **Smooth animations**: Framer Motion scale + opacity transitions
+- **Stacked modals**: Detail view → Edit form → Success feedback flow
+- **Keyboard navigation**: ESC key closes active modals
+- **Click-outside**: Backdrop clicks close modals (configurable)
+- **Scroll prevention**: Body scroll locked when modals are open
+- **Smooth animations**: Framer Motion scale + opacity transitions for professional feel
+- **Auto-refresh**: Detail modals automatically refetch data when reopened after edits
 
 ### Parallax System Architecture
 1. **Floating Text Layers**: Animated scrolling book titles at different speeds
@@ -263,11 +327,14 @@ const handleFormSuccess = () => {
 4. **Hardware Acceleration**: Transform-only animations for 60fps performance
 
 ### Performance Optimizations
-- **Debounced Search**: 300ms delay on search input to reduce re-renders
-- **Memoized Sorting**: `useMemo` for filtered/sorted book lists
-- **Lazy Loading**: Components render only when in viewport
+- **Debounced Search**: 300ms delay on search input to reduce API calls and re-renders
+- **Memoized Sorting**: `useMemo` for filtered/sorted book lists to prevent unnecessary recalculations
+- **Lazy Loading**: Components render only when in viewport (intersection observer)
 - **Single API Fetch**: Data fetched once at app level, passed down via props
-- **Hardware Acceleration**: `will-change: transform, opacity` on animated elements
+- **Selective Refetch**: Only affected resources refresh after mutations (books OR authors)
+- **Hardware Acceleration**: `will-change: transform, opacity` on animated elements for 60fps
+- **Smart Caching**: Search results cached until query changes, preventing duplicate requests
+- **Batch Loading**: Load search results in small batches (5 at a time) instead of all at once
 
 ## 🎨 Design Tokens & Color System (Sakura Theme)
 

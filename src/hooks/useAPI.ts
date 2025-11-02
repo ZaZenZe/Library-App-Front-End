@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { booksAPI, authorsAPI, getErrorMessage } from '../services/api';
-import type { Book, Author, CreateBookDTO, UpdateBookDTO, CreateAuthorDTO, UpdateAuthorDTO, APIError } from '../types/api';
+import type { Book, Author, CreateBookDTO, UpdateBookDTO, CreateAuthorDTO, UpdateAuthorDTO, APIError, BookSearchResult } from '../types/api';
 
 // Helper to safely extract status from error
 const getErrorStatus = (err: unknown): number | undefined => {
@@ -293,6 +293,37 @@ export function useImportBook() {
   }, []);
 
   return { importBook, loading, error };
+}
+
+/**
+ * Search books by title (Google Books API)
+ */
+export function useSearchBooks() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<APIError | null>(null);
+
+  const searchBooks = useCallback(async (title: string, maxResults: number = 40): Promise<BookSearchResult[]> => {
+    if (!title.trim()) return [];
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await booksAPI.searchByTitle(title, Math.min(maxResults, 40)); // Cap at 40
+      return result;
+    } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      setError({
+        message: errorMessage,
+        status: getErrorStatus(err),
+      });
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { searchBooks, loading, error };
 }
 
 // ============================================

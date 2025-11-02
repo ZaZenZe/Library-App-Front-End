@@ -4,7 +4,7 @@
 
 import axios from 'axios';
 import type { AxiosInstance, AxiosError } from 'axios';
-import type { Book, Author, CreateBookDTO, UpdateBookDTO, CreateAuthorDTO, UpdateAuthorDTO } from '../types/api';
+import type { Book, Author, CreateBookDTO, UpdateBookDTO, CreateAuthorDTO, UpdateAuthorDTO, BookSearchResult } from '../types/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://library-app-dot-net.onrender.com';
 
@@ -115,6 +115,19 @@ export const booksAPI = {
    */
   importByISBN: async (isbn: string): Promise<Book> => {
     const response = await apiClient.post<Book>(`/books/import/isbn/${isbn}`);
+    return response.data;
+  },
+
+  /**
+   * Search books by title (Google Books API)
+   * GET /books/search?title={title}&maxResults={maxResults}
+   * NOTE: This does NOT save to database - just returns search results
+   * Maximum allowed by API: 40 results
+   */
+  searchByTitle: async (title: string, maxResults: number = 40): Promise<BookSearchResult[]> => {
+    const response = await apiClient.get<BookSearchResult[]>('/books/search', {
+      params: { title, maxResults: Math.min(maxResults, 40) } // Cap at 40 (API limit)
+    });
     return response.data;
   },
 };

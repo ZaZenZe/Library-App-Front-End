@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Book, CreateBookDTO, UpdateBookDTO } from '../../types/api';
-import { useCreateBook, useUpdateBook, useImportBook } from '../../hooks/useAPI';
+import type { Book, CreateBookDTO, UpdateBookDTO, BookSearchResult } from '../../types/api';
+import { useCreateBook, useUpdateBook, useImportBook, useSearchBooks, useAuthors, useCreateAuthor } from '../../hooks/useAPI';
+import { useDebounce } from '../../hooks/useDebounce';
 import './BookFormModal.scss';
 
 interface BookFormModalProps {
@@ -44,6 +45,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const { createBook, loading: creating } = useCreateBook();
   const { updateBook, loading: updating } = useUpdateBook();
   const { importBook, loading: importing } = useImportBook();
+  const { searchBooks, loading: searching } = useSearchBooks();
+  const { data: authors } = useAuthors();
+  const { createAuthor } = useCreateAuthor();
 
   const isEditMode = !!editBook;
   const [formData, setFormData] = useState<FormData>({
@@ -58,6 +62,18 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isbnImportValue, setIsbnImportValue] = useState('');
   const [showIsbnImport, setShowIsbnImport] = useState(false);
+  
+  // Autocomplete state
+  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [currentMaxResults, setCurrentMaxResults] = useState(10); // Start with 10 results
+  const [canLoadMore, setCanLoadMore] = useState(false); // Track if more results might be available
+  const autocompleteRef = useRef<HTMLDivElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  
+  // Debounce title input for search
+  const debouncedTitle = useDebounce(formData.title, 400);
 
   // Populate form when editing
   useEffect(() => {
@@ -111,6 +127,131 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     };
   }, [isOpen]);
 
+  // Handle book selection from autocomplete - Use ISBN import endpoint
+  const handleSelectBook = useCallback(async (book: BookSearchResult) => {
+    // Close the autocomplete dropdown immediately
+    setShowAutocomplete(false);
+    setSearchResults([]);
+    setSelectedIndex(-1);
+    
+    // If book has ISBN, use the import endpoint (backend handles everything)
+    if (book.isbn) {
+      const createdBook = await importBook(book.isbn);
+      
+      if (createdBook) {
+        // Refresh authors list in case a new author was created
+        onAuthorsRefresh?.();
+        
+        // Trigger success callback
+        onSuccess?.(createdBook);
+        
+        // Close modal
+        onClose();
+        return;
+      }
+    }
+    
+    // Fallback: No ISBN or import failed - show error
+    onError?.('Failed to add book. Missing ISBN or book already exists.');
+  }, [importBook, onSuccess, onClose, onAuthorsRefresh, onError]);
+
+  // Search books by title (debounced)
+  useEffect(() => {
+    const performSearch = async () => {
+      // Only search if: 1) not in edit mode, 2) has 1+ chars, 3) input is focused
+      if (debouncedTitle.trim().length >= 1 && !isEditMode && titleInputRef.current === document.activeElement) {
+        // Start with 5 results when search query changes
+        const resetMaxResults = 5;
+        setCurrentMaxResults(resetMaxResults);
+        const results = await searchBooks(debouncedTitle, resetMaxResults);
+        setSearchResults(results);
+        setShowAutocomplete(results.length > 0);
+        // If we got 5 results, there might be more available (up to 40)
+        setCanLoadMore(results.length === resetMaxResults);
+      } else {
+        setSearchResults([]);
+        setShowAutocomplete(false);
+        setCanLoadMore(false);
+      }
+    };
+
+    performSearch();
+  }, [debouncedTitle, searchBooks, isEditMode]);
+
+  // Function to load more results - directly fetches with new limit
+  const handleLoadMore = useCallback(async () => {
+    if (!debouncedTitle.trim() || searching) return;
+    
+    const newMaxResults = Math.min(currentMaxResults + 5, 40); // Load 5 more, cap at 40
+    setCurrentMaxResults(newMaxResults);
+    
+    // Fetch with the new limit
+    const results = await searchBooks(debouncedTitle, newMaxResults);
+    setSearchResults(results);
+    // If results length equals what we asked for and we're not at cap, there might be more
+    setCanLoadMore(results.length === newMaxResults && newMaxResults < 40);
+  }, [debouncedTitle, currentMaxResults, searchBooks, searching]);
+
+  // Click outside to close autocomplete
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (autocompleteRef.current && !autocompleteRef.current.contains(event.target as Node) &&
+          titleInputRef.current && !titleInputRef.current.contains(event.target as Node)) {
+        setShowAutocomplete(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close autocomplete when title input loses focus (but not when clicking dropdown)
+  useEffect(() => {
+    const handleBlur = () => {
+      // Small delay to allow click on autocomplete items
+      setTimeout(() => {
+        if (document.activeElement !== titleInputRef.current && 
+            !autocompleteRef.current?.contains(document.activeElement)) {
+          setShowAutocomplete(false);
+          setSelectedIndex(-1);
+        }
+      }, 150);
+    };
+
+    const titleInput = titleInputRef.current;
+    if (titleInput) {
+      titleInput.addEventListener('blur', handleBlur);
+      return () => titleInput.removeEventListener('blur', handleBlur);
+    }
+  }, []);
+
+  // Keyboard navigation for autocomplete
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!showAutocomplete || searchResults.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev < searchResults.length - 1 ? prev + 1 : 0));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : searchResults.length - 1));
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault();
+        handleSelectBook(searchResults[selectedIndex]);
+      } else if (e.key === 'Escape') {
+        setShowAutocomplete(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    if (showAutocomplete) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [showAutocomplete, searchResults, selectedIndex, handleSelectBook]);
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -132,9 +273,8 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       newErrors.year = 'Publication year is required';
     } else {
       const year = parseInt(formData.year);
-      const currentYear = new Date().getFullYear();
-      if (isNaN(year) || year < 1000 || year > currentYear + 1) {
-        newErrors.year = `Year must be between 1000 and ${currentYear + 1}`;
+      if (isNaN(year) || year < 0 || year > 3000) {
+        newErrors.year = 'Year must be between 0 and 3000';
       }
     }
 
@@ -149,23 +289,57 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       return;
     }
 
-    const bookData: CreateBookDTO = {
-      title: formData.title.trim(),
-      authorName: formData.authorName.trim(),
-      isbn: formData.isbn.trim(),
-      year: parseInt(formData.year),
-      publisherName: formData.publisherName.trim() || undefined,
-      description: formData.description.trim() || undefined,
-      thumbnail: formData.thumbnail.trim() || undefined,
-    };
-
     try {
+      // Step 1: Get or create author
+      let authorId: number;
+      const authorName = formData.authorName.trim();
+      const existingAuthor = authors?.find(a => a.name.toLowerCase() === authorName.toLowerCase());
+      
+      if (existingAuthor) {
+        authorId = existingAuthor.id;
+      } else {
+        // Create new author
+        const newAuthor = await createAuthor({ name: authorName });
+        if (!newAuthor) {
+          onError?.('Failed to create author. Please try again.');
+          return;
+        }
+        authorId = newAuthor.id;
+        // Refresh authors list
+        onAuthorsRefresh?.();
+      }
+
+      // Step 2: Handle publisher (if provided)
+      // NOTE: Publisher management is NOT YET IMPLEMENTED in the backend
+      // For now, we just keep existing publisherId or set to null
+      let publisherId: number | null = null;
       if (isEditMode && editBook) {
-        // Update existing book
-        const updateData: UpdateBookDTO = bookData;
+        // Keep existing publisher ID when editing
+        publisherId = editBook.publisherId || null;
+      }
+      // TODO: When backend adds /publishers endpoints, add publisher lookup/creation here
+      // similar to author handling above
+
+      // Step 3: Create or update book
+      if (isEditMode && editBook) {
+        // Update existing book - ALL required fields must be sent
+        const updateData: UpdateBookDTO = {
+          title: formData.title.trim(),
+          authorId,
+          isbn: formData.isbn.trim(),
+          year: parseInt(formData.year),
+          publisherId, // Use the resolved publisher ID
+        };
+
+        // Add optional fields - send null if empty to clear them
+        updateData.description = formData.description.trim() || null;
+        updateData.thumbnail = formData.thumbnail.trim() || null;
+        updateData.smallThumbnail = editBook.details?.smallThumbnail || null;
+
         const result = await updateBook(editBook.id, updateData);
 
         if (result) {
+          // Trigger success - this will refresh books AND authors
           onSuccess?.(result);
           onClose();
         } else {
@@ -173,6 +347,22 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
         }
       } else {
         // Create new book
+        const bookData: CreateBookDTO = {
+          title: formData.title.trim(),
+          authorId,
+          isbn: formData.isbn.trim(),
+          year: parseInt(formData.year),
+          publisherId, // Use the resolved publisher ID (currently always null)
+        };
+
+        // Add optional fields if they have values
+        if (formData.description.trim()) {
+          bookData.description = formData.description.trim();
+        }
+        if (formData.thumbnail.trim()) {
+          bookData.thumbnail = formData.thumbnail.trim();
+        }
+
         const result = await createBook(bookData);
 
         if (result) {
@@ -182,7 +372,8 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
           onError?.('Failed to add book. Please try again.');
         }
       }
-    } catch {
+    } catch (error) {
+      console.error('Book operation error:', error);
       onError?.(isEditMode ? 'Failed to update book. Please try again.' : 'Failed to add book. Please try again.');
     }
   };
@@ -320,23 +511,100 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
             )}
 
             <form className="book-form-modal__form" onSubmit={handleSubmit}>
-              {/* Title Field */}
-              <div className="book-form-modal__field">
+              {/* Title Field with Autocomplete */}
+              <div className="book-form-modal__field book-form-modal__field--autocomplete">
                 <label htmlFor="book-title" className="book-form-modal__label">
-                  Book Title *
+                  Book Title * {!isEditMode && <span className="book-form-modal__label-hint">(Start typing to search)</span>}
                 </label>
-                <input
-                  id="book-title"
-                  type="text"
-                  className={`book-form-modal__input ${errors.title ? 'book-form-modal__input--error' : ''}`}
-                  placeholder="Enter book title"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  disabled={isSubmitting}
-                />
-                {errors.title && (
-                  <span className="book-form-modal__error">{errors.title}</span>
-                )}
+                <div className="book-form-modal__autocomplete-wrapper">
+                  <input
+                    ref={titleInputRef}
+                    id="book-title"
+                    type="text"
+                    className={`book-form-modal__input ${errors.title ? 'book-form-modal__input--error' : ''}`}
+                    placeholder="Enter book title or search existing books..."
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    disabled={isSubmitting || isEditMode}
+                    autoComplete="off"
+                  />
+                  {searching && !isEditMode && (
+                    <div className="book-form-modal__search-indicator">
+                      <span className="book-form-modal__spinner" />
+                    </div>
+                  )}
+                  {errors.title && (
+                    <span className="book-form-modal__error">{errors.title}</span>
+                  )}
+                  
+                  {/* Autocomplete Dropdown */}
+                  <AnimatePresence>
+                    {showAutocomplete && searchResults.length > 0 && !isEditMode && (
+                      <motion.div
+                        ref={autocompleteRef}
+                        className="book-form-modal__autocomplete"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="book-form-modal__autocomplete-header">
+                          Books found from Google Books
+                        </div>
+                        <ul className="book-form-modal__autocomplete-list">
+                          {searchResults.map((book, index) => (
+                            <li
+                              key={`${book.isbn}-${index}`}
+                              className={`book-form-modal__autocomplete-item ${
+                                index === selectedIndex ? 'book-form-modal__autocomplete-item--selected' : ''
+                              }`}
+                              onClick={() => handleSelectBook(book)}
+                              onMouseEnter={() => setSelectedIndex(index)}
+                            >
+                              <div className="book-form-modal__autocomplete-item-image">
+                                {book.thumbnail ? (
+                                  <img 
+                                    src={book.thumbnail} 
+                                    alt={book.title}
+                                  />
+                                ) : (
+                                  <div className="book-form-modal__autocomplete-item-placeholder">📖</div>
+                                )}
+                              </div>
+                              <div className="book-form-modal__autocomplete-item-info">
+                                <div className="book-form-modal__autocomplete-item-title">
+                                  {book.title}
+                                </div>
+                                <div className="book-form-modal__autocomplete-item-meta">
+                                  {book.authors?.join(', ') || 'Unknown Author'} • {book.year || 'N/A'}
+                                </div>
+                                {book.isbn && (
+                                  <div className="book-form-modal__autocomplete-item-isbn">
+                                    ISBN: {book.isbn}
+                                  </div>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        {/* Load More Button */}
+                        {canLoadMore && (
+                          <div className="book-form-modal__autocomplete-footer">
+                            <button
+                              type="button"
+                              className="book-form-modal__load-more"
+                              onClick={handleLoadMore}
+                              disabled={searching}
+                            >
+                              {searching ? 'Loading...' : 'Load More Books'}
+                            </button>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
               {/* Author Name Field */}
@@ -390,32 +658,31 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                   value={formData.year}
                   onChange={(e) => handleInputChange('year', e.target.value)}
                   disabled={isSubmitting}
-                  min="1000"
-                  max={new Date().getFullYear() + 1}
+                  min="0"
+                  max="3000"
                 />
                 {errors.year && (
                   <span className="book-form-modal__error">{errors.year}</span>
                 )}
               </div>
 
-              {/* Publisher Name Field */}
-              <div className="book-form-modal__field">
-                <label htmlFor="book-publisher" className="book-form-modal__label">
-                  Publisher
-                </label>
-                <input
-                  id="book-publisher"
-                  type="text"
-                  className={`book-form-modal__input ${errors.publisherName ? 'book-form-modal__input--error' : ''}`}
-                  placeholder="Penguin Random House, HarperCollins, etc."
-                  value={formData.publisherName}
-                  onChange={(e) => handleInputChange('publisherName', e.target.value)}
-                  disabled={isSubmitting}
-                />
-                {errors.publisherName && (
-                  <span className="book-form-modal__error">{errors.publisherName}</span>
-                )}
-              </div>
+              {/* Publisher Name Field - Read-only (only set via ISBN import) */}
+              {formData.publisherName && (
+                <div className="book-form-modal__field">
+                  <label htmlFor="book-publisher" className="book-form-modal__label">
+                    Publisher
+                  </label>
+                  <input
+                    id="book-publisher"
+                    type="text"
+                    className="book-form-modal__input"
+                    value={formData.publisherName}
+                    readOnly
+                    disabled
+                    title="Publisher can only be set via ISBN import"
+                  />
+                </div>
+              )}
 
               {/* Description Field */}
               <div className="book-form-modal__field">
