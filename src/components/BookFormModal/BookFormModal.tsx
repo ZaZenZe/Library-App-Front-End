@@ -158,9 +158,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   // Search books by title (debounced)
   useEffect(() => {
     const performSearch = async () => {
-      // Only search if: 1) not in edit mode, 2) has 3+ chars, 3) input is focused
-      if (debouncedTitle.trim().length >= 3 && !isEditMode && titleInputRef.current === document.activeElement) {
-        // Reset to 10 results when search query changes
+      // Only search if: 1) not in edit mode, 2) has 1+ chars, 3) input is focused
+      if (debouncedTitle.trim().length >= 1 && !isEditMode && titleInputRef.current === document.activeElement) {
+        // Start with 10 results when search query changes
         const resetMaxResults = 10;
         setCurrentMaxResults(resetMaxResults);
         const results = await searchBooks(debouncedTitle, resetMaxResults);
