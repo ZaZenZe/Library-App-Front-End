@@ -273,9 +273,8 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       newErrors.year = 'Publication year is required';
     } else {
       const year = parseInt(formData.year);
-      const currentYear = new Date().getFullYear();
-      if (isNaN(year) || year < 1000 || year > currentYear + 1) {
-        newErrors.year = `Year must be between 1000 and ${currentYear + 1}`;
+      if (isNaN(year) || year < 0 || year > 3000) {
+        newErrors.year = 'Year must be between 0 and 3000';
       }
     }
 
@@ -310,7 +309,18 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
         onAuthorsRefresh?.();
       }
 
-      // Step 2: Create or update book
+      // Step 2: Handle publisher (if provided)
+      // NOTE: Publisher management is NOT YET IMPLEMENTED in the backend
+      // For now, we just keep existing publisherId or set to null
+      let publisherId: number | null = null;
+      if (isEditMode && editBook) {
+        // Keep existing publisher ID when editing
+        publisherId = editBook.publisherId || null;
+      }
+      // TODO: When backend adds /publishers endpoints, add publisher lookup/creation here
+      // similar to author handling above
+
+      // Step 3: Create or update book
       if (isEditMode && editBook) {
         // Update existing book - ALL required fields must be sent
         const updateData: UpdateBookDTO = {
@@ -318,7 +328,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
           authorId,
           isbn: formData.isbn.trim(),
           year: parseInt(formData.year),
-          publisherId: editBook.publisherId || null, // Keep existing publisher or null
+          publisherId, // Use the resolved publisher ID
         };
 
         // Add optional fields - send null if empty to clear them
@@ -342,7 +352,16 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
           authorId,
           isbn: formData.isbn.trim(),
           year: parseInt(formData.year),
+          publisherId, // Use the resolved publisher ID (currently always null)
         };
+
+        // Add optional fields if they have values
+        if (formData.description.trim()) {
+          bookData.description = formData.description.trim();
+        }
+        if (formData.thumbnail.trim()) {
+          bookData.thumbnail = formData.thumbnail.trim();
+        }
 
         const result = await createBook(bookData);
 
@@ -353,7 +372,8 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
           onError?.('Failed to add book. Please try again.');
         }
       }
-    } catch {
+    } catch (error) {
+      console.error('Book operation error:', error);
       onError?.(isEditMode ? 'Failed to update book. Please try again.' : 'Failed to add book. Please try again.');
     }
   };
@@ -638,32 +658,31 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                   value={formData.year}
                   onChange={(e) => handleInputChange('year', e.target.value)}
                   disabled={isSubmitting}
-                  min="1000"
-                  max={new Date().getFullYear() + 1}
+                  min="0"
+                  max="3000"
                 />
                 {errors.year && (
                   <span className="book-form-modal__error">{errors.year}</span>
                 )}
               </div>
 
-              {/* Publisher Name Field */}
-              <div className="book-form-modal__field">
-                <label htmlFor="book-publisher" className="book-form-modal__label">
-                  Publisher
-                </label>
-                <input
-                  id="book-publisher"
-                  type="text"
-                  className={`book-form-modal__input ${errors.publisherName ? 'book-form-modal__input--error' : ''}`}
-                  placeholder="Penguin Random House, HarperCollins, etc."
-                  value={formData.publisherName}
-                  onChange={(e) => handleInputChange('publisherName', e.target.value)}
-                  disabled={isSubmitting}
-                />
-                {errors.publisherName && (
-                  <span className="book-form-modal__error">{errors.publisherName}</span>
-                )}
-              </div>
+              {/* Publisher Name Field - Read-only (only set via ISBN import) */}
+              {formData.publisherName && (
+                <div className="book-form-modal__field">
+                  <label htmlFor="book-publisher" className="book-form-modal__label">
+                    Publisher
+                  </label>
+                  <input
+                    id="book-publisher"
+                    type="text"
+                    className="book-form-modal__input"
+                    value={formData.publisherName}
+                    readOnly
+                    disabled
+                    title="Publisher can only be set via ISBN import"
+                  />
+                </div>
+              )}
 
               {/* Description Field */}
               <div className="book-form-modal__field">

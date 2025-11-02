@@ -77,6 +77,9 @@ export interface CreateBookDTO {
   isbn: string;
   year: number;
   publisherId?: number | null; // Optional publisher ID
+  description?: string | null; // Optional description (creates BookDetails)
+  smallThumbnail?: string | null; // Optional small thumbnail
+  thumbnail?: string | null; // Optional thumbnail
 }
 
 export interface UpdateBookDTO {
