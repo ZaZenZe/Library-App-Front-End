@@ -160,13 +160,13 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     const performSearch = async () => {
       // Only search if: 1) not in edit mode, 2) has 1+ chars, 3) input is focused
       if (debouncedTitle.trim().length >= 1 && !isEditMode && titleInputRef.current === document.activeElement) {
-        // Start with 10 results when search query changes
-        const resetMaxResults = 10;
+        // Start with 5 results when search query changes
+        const resetMaxResults = 5;
         setCurrentMaxResults(resetMaxResults);
         const results = await searchBooks(debouncedTitle, resetMaxResults);
         setSearchResults(results);
         setShowAutocomplete(results.length > 0);
-        // If we got 10 results, there might be more available (up to 40)
+        // If we got 5 results, there might be more available (up to 40)
         setCanLoadMore(results.length === resetMaxResults);
       } else {
         setSearchResults([]);
@@ -182,7 +182,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const handleLoadMore = useCallback(async () => {
     if (!debouncedTitle.trim() || searching) return;
     
-    const newMaxResults = Math.min(currentMaxResults + 10, 40); // Load 10 more, cap at 40
+    const newMaxResults = Math.min(currentMaxResults + 5, 40); // Load 5 more, cap at 40
     setCurrentMaxResults(newMaxResults);
     
     // Fetch with the new limit
