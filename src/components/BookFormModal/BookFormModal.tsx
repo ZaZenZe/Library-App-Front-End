@@ -310,15 +310,16 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
 
       // Step 2: Create or update book
       if (isEditMode && editBook) {
-        // Update existing book
+        // Update existing book - ALL required fields must be sent
         const updateData: UpdateBookDTO = {
           title: formData.title.trim(),
           authorId,
           isbn: formData.isbn.trim(),
           year: parseInt(formData.year),
+          publisherId: editBook.publisherId || null, // Keep existing publisher or null
         };
 
-        // Only add optional fields if they have values
+        // Add optional fields if they have values
         if (formData.description.trim()) {
           updateData.description = formData.description.trim();
         }
