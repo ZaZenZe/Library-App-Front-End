@@ -295,6 +295,37 @@ export function useImportBook() {
   return { importBook, loading, error };
 }
 
+/**
+ * Search books by title (Google Books API)
+ */
+export function useSearchBooks() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<APIError | null>(null);
+
+  const searchBooks = useCallback(async (title: string): Promise<Book[]> => {
+    if (!title.trim()) return [];
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await booksAPI.searchByTitle(title);
+      return result;
+    } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      setError({
+        message: errorMessage,
+        status: getErrorStatus(err),
+      });
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { searchBooks, loading, error };
+}
+
 // ============================================
 // AUTHORS HOOKS
 // ============================================

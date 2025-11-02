@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Book, CreateBookDTO, UpdateBookDTO } from '../../types/api';
-import { useCreateBook, useUpdateBook, useImportBook } from '../../hooks/useAPI';
+import { useCreateBook, useUpdateBook, useImportBook, useSearchBooks } from '../../hooks/useAPI';
+import { useDebounce } from '../../hooks/useDebounce';
 import './BookFormModal.scss';
 
 interface BookFormModalProps {
@@ -44,6 +45,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const { createBook, loading: creating } = useCreateBook();
   const { updateBook, loading: updating } = useUpdateBook();
   const { importBook, loading: importing } = useImportBook();
+  const { searchBooks, loading: searching } = useSearchBooks();
 
   const isEditMode = !!editBook;
   const [formData, setFormData] = useState<FormData>({
@@ -58,6 +60,16 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isbnImportValue, setIsbnImportValue] = useState('');
   const [showIsbnImport, setShowIsbnImport] = useState(false);
+  
+  // Autocomplete state
+  const [searchResults, setSearchResults] = useState<Book[]>([]);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const autocompleteRef = useRef<HTMLDivElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  
+  // Debounce title input for search
+  const debouncedTitle = useDebounce(formData.title, 400);
 
   // Populate form when editing
   useEffect(() => {
@@ -110,6 +122,82 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  // Handle book selection from autocomplete
+  const handleSelectBook = useCallback((book: Book) => {
+    // Auto-fill the form with selected book data
+    setFormData({
+      title: book.title,
+      authorName: book.author?.name || '',
+      isbn: book.isbn,
+      year: book.year.toString(),
+      publisherName: book.publisher?.name || '',
+      description: book.details?.description || '',
+      thumbnail: book.details?.thumbnail || book.details?.smallThumbnail || '',
+    });
+    setShowAutocomplete(false);
+    setSearchResults([]);
+    setSelectedIndex(-1);
+    
+    // Trigger success callback with the selected book (it's already in the database)
+    onSuccess?.(book);
+    onClose();
+  }, [onSuccess, onClose]);
+
+  // Search books by title (debounced)
+  useEffect(() => {
+    const performSearch = async () => {
+      if (debouncedTitle.trim().length >= 3 && !isEditMode) {
+        const results = await searchBooks(debouncedTitle);
+        setSearchResults(results);
+        setShowAutocomplete(results.length > 0);
+      } else {
+        setSearchResults([]);
+        setShowAutocomplete(false);
+      }
+    };
+
+    performSearch();
+  }, [debouncedTitle, searchBooks, isEditMode]);
+
+  // Click outside to close autocomplete
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (autocompleteRef.current && !autocompleteRef.current.contains(event.target as Node) &&
+          titleInputRef.current && !titleInputRef.current.contains(event.target as Node)) {
+        setShowAutocomplete(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Keyboard navigation for autocomplete
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!showAutocomplete || searchResults.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev < searchResults.length - 1 ? prev + 1 : 0));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : searchResults.length - 1));
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault();
+        handleSelectBook(searchResults[selectedIndex]);
+      } else if (e.key === 'Escape') {
+        setShowAutocomplete(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    if (showAutocomplete) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [showAutocomplete, searchResults, selectedIndex, handleSelectBook]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -320,23 +408,86 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
             )}
 
             <form className="book-form-modal__form" onSubmit={handleSubmit}>
-              {/* Title Field */}
-              <div className="book-form-modal__field">
+              {/* Title Field with Autocomplete */}
+              <div className="book-form-modal__field book-form-modal__field--autocomplete">
                 <label htmlFor="book-title" className="book-form-modal__label">
-                  Book Title *
+                  Book Title * {!isEditMode && <span className="book-form-modal__label-hint">(Start typing to search)</span>}
                 </label>
-                <input
-                  id="book-title"
-                  type="text"
-                  className={`book-form-modal__input ${errors.title ? 'book-form-modal__input--error' : ''}`}
-                  placeholder="Enter book title"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  disabled={isSubmitting}
-                />
-                {errors.title && (
-                  <span className="book-form-modal__error">{errors.title}</span>
-                )}
+                <div className="book-form-modal__autocomplete-wrapper">
+                  <input
+                    ref={titleInputRef}
+                    id="book-title"
+                    type="text"
+                    className={`book-form-modal__input ${errors.title ? 'book-form-modal__input--error' : ''}`}
+                    placeholder="Enter book title or search existing books..."
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    disabled={isSubmitting || isEditMode}
+                    autoComplete="off"
+                  />
+                  {searching && !isEditMode && (
+                    <div className="book-form-modal__search-indicator">
+                      <span className="book-form-modal__spinner" />
+                    </div>
+                  )}
+                  {errors.title && (
+                    <span className="book-form-modal__error">{errors.title}</span>
+                  )}
+                  
+                  {/* Autocomplete Dropdown */}
+                  <AnimatePresence>
+                    {showAutocomplete && searchResults.length > 0 && !isEditMode && (
+                      <motion.div
+                        ref={autocompleteRef}
+                        className="book-form-modal__autocomplete"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="book-form-modal__autocomplete-header">
+                          Found {searchResults.length} book{searchResults.length !== 1 ? 's' : ''} from Google Books
+                        </div>
+                        <ul className="book-form-modal__autocomplete-list">
+                          {searchResults.map((book, index) => (
+                            <li
+                              key={book.id}
+                              className={`book-form-modal__autocomplete-item ${
+                                index === selectedIndex ? 'book-form-modal__autocomplete-item--selected' : ''
+                              }`}
+                              onClick={() => handleSelectBook(book)}
+                              onMouseEnter={() => setSelectedIndex(index)}
+                            >
+                              <div className="book-form-modal__autocomplete-item-image">
+                                {book.details?.thumbnail || book.details?.smallThumbnail ? (
+                                  <img 
+                                    src={book.details.thumbnail || book.details.smallThumbnail || ''} 
+                                    alt={book.title}
+                                  />
+                                ) : (
+                                  <div className="book-form-modal__autocomplete-item-placeholder">📖</div>
+                                )}
+                              </div>
+                              <div className="book-form-modal__autocomplete-item-info">
+                                <div className="book-form-modal__autocomplete-item-title">
+                                  {book.title}
+                                </div>
+                                <div className="book-form-modal__autocomplete-item-meta">
+                                  {book.author?.name} • {book.year}
+                                </div>
+                                {book.isbn && (
+                                  <div className="book-form-modal__autocomplete-item-isbn">
+                                    ISBN: {book.isbn}
+                                  </div>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
               {/* Author Name Field */}

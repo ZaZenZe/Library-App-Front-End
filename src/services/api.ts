@@ -117,6 +117,17 @@ export const booksAPI = {
     const response = await apiClient.post<Book>(`/books/import/isbn/${isbn}`);
     return response.data;
   },
+
+  /**
+   * Search books by title (Google Books API)
+   * GET /books/search?title={title}
+   */
+  searchByTitle: async (title: string): Promise<Book[]> => {
+    const response = await apiClient.get<Book[]>('/books/search', {
+      params: { title }
+    });
+    return response.data;
+  },
 };
 
 // ============================================
