@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Book, CreateBookDTO, UpdateBookDTO } from '../../types/api';
-import { useCreateBook, useUpdateBook, useImportBook, useSearchBooks } from '../../hooks/useAPI';
+import type { Book, CreateBookDTO, UpdateBookDTO, BookSearchResult, Author } from '../../types/api';
+import { useCreateBook, useUpdateBook, useImportBook, useSearchBooks, useAuthors, useCreateAuthor } from '../../hooks/useAPI';
 import { useDebounce } from '../../hooks/useDebounce';
 import './BookFormModal.scss';
 
@@ -46,6 +46,8 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const { updateBook, loading: updating } = useUpdateBook();
   const { importBook, loading: importing } = useImportBook();
   const { searchBooks, loading: searching } = useSearchBooks();
+  const { data: authors } = useAuthors();
+  const { createAuthor } = useCreateAuthor();
 
   const isEditMode = !!editBook;
   const [formData, setFormData] = useState<FormData>({
@@ -62,9 +64,11 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
   const [showIsbnImport, setShowIsbnImport] = useState(false);
   
   // Autocomplete state
-  const [searchResults, setSearchResults] = useState<Book[]>([]);
+  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [currentMaxResults, setCurrentMaxResults] = useState(5); // Start with 5 results
+  const [canLoadMore, setCanLoadMore] = useState(false); // Track if more results might be available
   const autocompleteRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   
@@ -123,42 +127,68 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
     };
   }, [isOpen]);
 
-  // Handle book selection from autocomplete
-  const handleSelectBook = useCallback((book: Book) => {
-    // Auto-fill the form with selected book data
-    setFormData({
-      title: book.title,
-      authorName: book.author?.name || '',
-      isbn: book.isbn,
-      year: book.year.toString(),
-      publisherName: book.publisher?.name || '',
-      description: book.details?.description || '',
-      thumbnail: book.details?.thumbnail || book.details?.smallThumbnail || '',
-    });
+  // Handle book selection from autocomplete - Use ISBN import endpoint
+  const handleSelectBook = useCallback(async (book: BookSearchResult) => {
+    // Close the autocomplete dropdown immediately
     setShowAutocomplete(false);
     setSearchResults([]);
     setSelectedIndex(-1);
     
-    // Trigger success callback with the selected book (it's already in the database)
-    onSuccess?.(book);
-    onClose();
-  }, [onSuccess, onClose]);
+    // If book has ISBN, use the import endpoint (backend handles everything)
+    if (book.isbn) {
+      const createdBook = await importBook(book.isbn);
+      
+      if (createdBook) {
+        // Refresh authors list in case a new author was created
+        onAuthorsRefresh?.();
+        
+        // Trigger success callback
+        onSuccess?.(createdBook);
+        
+        // Close modal
+        onClose();
+        return;
+      }
+    }
+    
+    // Fallback: No ISBN or import failed - show error
+    onError?.('Failed to add book. Missing ISBN or book already exists.');
+  }, [importBook, onSuccess, onClose, onAuthorsRefresh, onError]);
 
   // Search books by title (debounced)
   useEffect(() => {
     const performSearch = async () => {
-      if (debouncedTitle.trim().length >= 3 && !isEditMode) {
-        const results = await searchBooks(debouncedTitle);
+      // Only search if: 1) not in edit mode, 2) has 3+ chars, 3) input is focused
+      if (debouncedTitle.trim().length >= 3 && !isEditMode && titleInputRef.current === document.activeElement) {
+        // Reset to 5 results when search query changes
+        setCurrentMaxResults(5);
+        const results = await searchBooks(debouncedTitle, 5);
         setSearchResults(results);
         setShowAutocomplete(results.length > 0);
+        // If we got 5 results, there might be more available
+        setCanLoadMore(results.length === 5);
       } else {
         setSearchResults([]);
         setShowAutocomplete(false);
+        setCanLoadMore(false);
       }
     };
 
     performSearch();
   }, [debouncedTitle, searchBooks, isEditMode]);
+
+  // Function to load more results
+  const handleLoadMore = useCallback(async () => {
+    if (!debouncedTitle.trim() || searching) return;
+    
+    const newMaxResults = currentMaxResults + 5;
+    setCurrentMaxResults(newMaxResults);
+    
+    const results = await searchBooks(debouncedTitle, newMaxResults);
+    setSearchResults(results);
+    // If results length equals what we asked for, there might be more
+    setCanLoadMore(results.length === newMaxResults);
+  }, [debouncedTitle, currentMaxResults, searchBooks, searching]);
 
   // Click outside to close autocomplete
   useEffect(() => {
@@ -166,11 +196,32 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       if (autocompleteRef.current && !autocompleteRef.current.contains(event.target as Node) &&
           titleInputRef.current && !titleInputRef.current.contains(event.target as Node)) {
         setShowAutocomplete(false);
+        setSelectedIndex(-1);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close autocomplete when title input loses focus (but not when clicking dropdown)
+  useEffect(() => {
+    const handleBlur = () => {
+      // Small delay to allow click on autocomplete items
+      setTimeout(() => {
+        if (document.activeElement !== titleInputRef.current && 
+            !autocompleteRef.current?.contains(document.activeElement)) {
+          setShowAutocomplete(false);
+          setSelectedIndex(-1);
+        }
+      }, 150);
+    };
+
+    const titleInput = titleInputRef.current;
+    if (titleInput) {
+      titleInput.addEventListener('blur', handleBlur);
+      return () => titleInput.removeEventListener('blur', handleBlur);
+    }
   }, []);
 
   // Keyboard navigation for autocomplete
@@ -237,20 +288,44 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
       return;
     }
 
-    const bookData: CreateBookDTO = {
-      title: formData.title.trim(),
-      authorName: formData.authorName.trim(),
-      isbn: formData.isbn.trim(),
-      year: parseInt(formData.year),
-      publisherName: formData.publisherName.trim() || undefined,
-      description: formData.description.trim() || undefined,
-      thumbnail: formData.thumbnail.trim() || undefined,
-    };
-
     try {
+      // Step 1: Get or create author
+      let authorId: number;
+      const authorName = formData.authorName.trim();
+      const existingAuthor = authors?.find(a => a.name.toLowerCase() === authorName.toLowerCase());
+      
+      if (existingAuthor) {
+        authorId = existingAuthor.id;
+      } else {
+        // Create new author
+        const newAuthor = await createAuthor({ name: authorName });
+        if (!newAuthor) {
+          onError?.('Failed to create author. Please try again.');
+          return;
+        }
+        authorId = newAuthor.id;
+        // Refresh authors list
+        onAuthorsRefresh?.();
+      }
+
+      // Step 2: Create or update book
       if (isEditMode && editBook) {
         // Update existing book
-        const updateData: UpdateBookDTO = bookData;
+        const updateData: UpdateBookDTO = {
+          title: formData.title.trim(),
+          authorId,
+          isbn: formData.isbn.trim(),
+          year: parseInt(formData.year),
+        };
+
+        // Only add optional fields if they have values
+        if (formData.description.trim()) {
+          updateData.description = formData.description.trim();
+        }
+        if (formData.thumbnail.trim()) {
+          updateData.thumbnail = formData.thumbnail.trim();
+        }
+
         const result = await updateBook(editBook.id, updateData);
 
         if (result) {
@@ -261,6 +336,13 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
         }
       } else {
         // Create new book
+        const bookData: CreateBookDTO = {
+          title: formData.title.trim(),
+          authorId,
+          isbn: formData.isbn.trim(),
+          year: parseInt(formData.year),
+        };
+
         const result = await createBook(bookData);
 
         if (result) {
@@ -451,7 +533,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                         <ul className="book-form-modal__autocomplete-list">
                           {searchResults.map((book, index) => (
                             <li
-                              key={book.id}
+                              key={`${book.isbn}-${index}`}
                               className={`book-form-modal__autocomplete-item ${
                                 index === selectedIndex ? 'book-form-modal__autocomplete-item--selected' : ''
                               }`}
@@ -459,9 +541,9 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                               onMouseEnter={() => setSelectedIndex(index)}
                             >
                               <div className="book-form-modal__autocomplete-item-image">
-                                {book.details?.thumbnail || book.details?.smallThumbnail ? (
+                                {book.thumbnail ? (
                                   <img 
-                                    src={book.details.thumbnail || book.details.smallThumbnail || ''} 
+                                    src={book.thumbnail} 
                                     alt={book.title}
                                   />
                                 ) : (
@@ -473,7 +555,7 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                                   {book.title}
                                 </div>
                                 <div className="book-form-modal__autocomplete-item-meta">
-                                  {book.author?.name} • {book.year}
+                                  {book.authors?.join(', ') || 'Unknown Author'} • {book.year || 'N/A'}
                                 </div>
                                 {book.isbn && (
                                   <div className="book-form-modal__autocomplete-item-isbn">
@@ -484,6 +566,20 @@ export const BookFormModal: React.FC<BookFormModalProps> = ({
                             </li>
                           ))}
                         </ul>
+                        
+                        {/* Load More Button */}
+                        {canLoadMore && (
+                          <div className="book-form-modal__autocomplete-footer">
+                            <button
+                              type="button"
+                              className="book-form-modal__load-more"
+                              onClick={handleLoadMore}
+                              disabled={searching}
+                            >
+                              {searching ? 'Loading...' : 'Load 5 More Results'}
+                            </button>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>

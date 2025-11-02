@@ -84,8 +84,9 @@ function App() {
   }
 
   const handleBookDeleted = () => {
-    // Refresh books list
+    // Refresh books list AND authors list
     refetchBooks();
+    refetchAuthors();
     setIsModalOpen(false)
     setSelectedBookId(null)
     success('Book deleted successfully! 🗑️')
@@ -104,8 +105,9 @@ function App() {
   }
 
   const handleFormSuccess = () => {
-    // Refresh books list
+    // Refresh books list AND authors list (in case new author was created)
     refetchBooks();
+    refetchAuthors();
     setIsFormModalOpen(false);
     setEditingBook(null);
     success(editingBook ? 'Book updated successfully! ✨' : 'Book added to your library! 📚')

@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { booksAPI, authorsAPI, getErrorMessage } from '../services/api';
-import type { Book, Author, CreateBookDTO, UpdateBookDTO, CreateAuthorDTO, UpdateAuthorDTO, APIError } from '../types/api';
+import type { Book, Author, CreateBookDTO, UpdateBookDTO, CreateAuthorDTO, UpdateAuthorDTO, APIError, BookSearchResult } from '../types/api';
 
 // Helper to safely extract status from error
 const getErrorStatus = (err: unknown): number | undefined => {
@@ -302,14 +302,14 @@ export function useSearchBooks() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<APIError | null>(null);
 
-  const searchBooks = useCallback(async (title: string): Promise<Book[]> => {
+  const searchBooks = useCallback(async (title: string, maxResults: number = 5): Promise<BookSearchResult[]> => {
     if (!title.trim()) return [];
     
     setLoading(true);
     setError(null);
     
     try {
-      const result = await booksAPI.searchByTitle(title);
+      const result = await booksAPI.searchByTitle(title, maxResults);
       return result;
     } catch (err) {
       const errorMessage = getErrorMessage(err);

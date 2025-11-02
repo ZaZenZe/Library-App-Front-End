@@ -14,12 +14,10 @@ interface AuthorFormModalProps {
 
 interface FormData {
   name: string;
-  bio: string;
 }
 
 interface FormErrors {
   name?: string;
-  bio?: string;
 }
 
 export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
@@ -32,7 +30,6 @@ export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
   const isEditMode = !!editAuthor;
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    bio: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,13 +40,11 @@ export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
     if (editAuthor) {
       setFormData({
         name: editAuthor.name,
-        bio: '', // Bio not currently in Author model from API
       });
     } else {
       // Reset form when not editing
       setFormData({
         name: '',
-        bio: '',
       });
     }
     setErrors({});
@@ -101,8 +96,6 @@ export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
       newErrors.name = 'Author name is required';
     }
 
-    // Bio is optional per API
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -124,14 +117,12 @@ export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
         // Update existing author
         const updateData: UpdateAuthorDTO = {
           name: formData.name.trim(),
-          // Bio field not yet implemented in API
         };
         result = await authorsAPI.update(editAuthor.id, updateData);
       } else {
         // Create new author
         const createData: CreateAuthorDTO = {
           name: formData.name.trim(),
-          // Bio field not yet implemented in API
         };
         result = await authorsAPI.create(createData);
       }
@@ -228,25 +219,6 @@ export const AuthorFormModal: React.FC<AuthorFormModalProps> = ({
                 />
                 {errors.name && (
                   <span className="author-form__error">{errors.name}</span>
-                )}
-              </div>
-
-              <div className="author-form__field">
-                <label htmlFor="bio" className="author-form__label">
-                  Biography <span className="optional">(optional)</span>
-                </label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleChange}
-                  placeholder="Brief biography of the author..."
-                  className={`author-form__textarea ${errors.bio ? 'error' : ''}`}
-                  rows={6}
-                  disabled={isSubmitting}
-                />
-                {errors.bio && (
-                  <span className="author-form__error">{errors.bio}</span>
                 )}
               </div>
 
